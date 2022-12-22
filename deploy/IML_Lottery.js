@@ -12,7 +12,7 @@ async function main() {
 
     addresses.IML_LOTTERY = deployment.address;
     fs.writeFileSync("./deploy/addresses.json", JSON.stringify(addresses, null, 2));
-    console.log("IML Lottery was deployed at: ", deployment.address);
+    console.log("✅ IML Lottery was deployed at: ", deployment.address);
 }
 
 main()

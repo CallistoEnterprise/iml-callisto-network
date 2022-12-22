@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
-import "hardhat/console.sol";
+// import "hardhat/console.sol";
 
 abstract contract Entropy_interface {
     function get_entropy() public virtual view returns (uint256);
@@ -18,7 +18,7 @@ contract Lottery {
     uint256 public entropy_fee          = 30;   // (will be divided by 1000 during calculations i.e. 1 means 0.1%) | this reward goes to the entropy providers reward pool
     uint256 public token_reward_fee     = 100;  // This reward goes to staked tokens reward pool
     
-    uint256 public min_allowed_bet      = 1000 ether; // 1K CLO for now
+    uint256 public min_allowed_bet      = 0.1 ether; // 1K CLO for now
     uint8   public max_allowed_deposits = 20;          // A user can make 20 bets during a single round
     
     uint256 public current_round;
@@ -83,7 +83,7 @@ contract Lottery {
 
         if(players[msg.sender].last_round < current_round)
         {
-            players[msg.sender].last_round   = current_round;
+            players[msg.sender].last_round = current_round;
             players[msg.sender].num_deposits[current_round] = 0;
         }
         else
@@ -93,7 +93,7 @@ contract Lottery {
         
         // Assign the "winning interval" for the player
         players[msg.sender].win_conditions[current_round][players[msg.sender].num_deposits[current_round]].interval_start = current_interval_end;
-        players[msg.sender].win_conditions[current_round][players[msg.sender].num_deposits[current_round]].interval_end   = current_interval_end + msg.value;
+        players[msg.sender].win_conditions[current_round][players[msg.sender].num_deposits[current_round]].interval_end = current_interval_end + msg.value;
         current_interval_end += msg.value;
         
         uint256 _reward_with_fees = msg.value;
@@ -159,7 +159,7 @@ contract Lottery {
     function finish_round(address payable _winner) public
     {
         // Important: finishing an active round does not automatically start a new one
-        require(block.timestamp > round_start_timestamp + deposits_phase_duration + entropy_phase_duration, "Round can be finished after the entropy reveal phase only");
+        require(block.timestamp + 4 days > round_start_timestamp + deposits_phase_duration + entropy_phase_duration, "Round can be finished after the entropy reveal phase only");
         
         
         //require(check_entropy_criteria(), "There is not enough entropy to ensure a fair winner calculation");
@@ -171,12 +171,11 @@ contract Lottery {
             
             // Paying the winner
             // Safe loop, cannot be more than 20 iterations
-            console.log(players[_winner].num_deposits[current_round]);
             for (uint8 i = 0; i<players[_winner].num_deposits[current_round]; i++)
             {
-                console.log("%s is picked up between %s ~ %s", RNG() / (10**18), players[_winner].win_conditions[current_round][i].interval_start / (10**18) , players[_winner].win_conditions[current_round][i].interval_end / (10**18));
-                if(players[_winner].win_conditions[current_round][i].interval_start < RNG() && players[_winner].win_conditions[current_round][i].interval_end > RNG())
+                if(players[_winner].win_conditions[current_round][i].interval_start <= RNG() && RNG() < players[_winner].win_conditions[current_round][i].interval_end)
                 {
+                    // console.log("\n%s\n%s\n%s", players[_winner].win_conditions[current_round][i].interval_start, RNG(), players[_winner].win_conditions[current_round][i].interval_end);
                     _winner.transfer(round_reward);
                     round_reward_paid = true;
                 }
@@ -197,11 +196,6 @@ contract Lottery {
     {
         
     }
-    function random(uint256 to) public returns (uint) {
-        uint randomnumber = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, nonce))) % to;
-        nonce++;
-        return randomnumber;
-    }
 
     function RNG() public returns (uint256)
     {
@@ -210,14 +204,13 @@ contract Lottery {
         uint256 _result;
         // `entropy` is a random value; can be greater or less than `current_interval_end`
         
-        uint256 _current_interval_end = random(current_interval_end + 1);
-        if(_entropy > _current_interval_end)
+        if(_entropy > current_interval_end)
         {
-            _result = _entropy % _current_interval_end;
+            _result = _entropy % current_interval_end;
         }
         else
         {
-            _result = _current_interval_end % _entropy;
+            _result = current_interval_end % _entropy;
         }
         
         return _result;

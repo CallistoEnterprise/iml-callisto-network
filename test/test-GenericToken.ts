@@ -4,13 +4,20 @@ import { expect } from 'chai'
 import { mineNext } from './helpers'
 import { formatEther, parseEther } from 'ethers/lib/utils'
 
-const provider = ethers.provider
-const _entropy_hash = ethers.utils.sha256(ethers.utils.defaultAbiCoder.encode([ "uint256", "uint256" ], [ parseEther("500"), 46 ]))
+// function random(uint256 to) public returns (uint) {
+//   uint randomnumber = uint(keccak256(abi.encodePacked(block.timestamp, msg.sender, nonce))) % to;
+//   nonce++;
+//   return randomnumber;
+// }
+
+const _entropy_hash1 = ethers.utils.sha256(ethers.utils.defaultAbiCoder.encode([ "uint256", "uint256" ], [ parseEther("100"), 12 ]))
+const _entropy_hash2 = ethers.utils.sha256(ethers.utils.defaultAbiCoder.encode([ "uint256", "uint256" ], [ parseEther("200"), 34 ]))
 
 export default describe('Lottery', function () {
   before(async function () {
-    const [owner] = await ethers.getSigners()
+    const [owner, challenger] = await ethers.getSigners()
     this.owner = owner
+    this.challenger = challenger
 
     this.lottery = await (await ethers.getContractFactory('Lottery')).deploy()
     this.entropy = await (await ethers.getContractFactory('Entropy')).deploy()
@@ -43,25 +50,43 @@ export default describe('Lottery', function () {
 
   it('start new round', async function () {
     mineNext()
-    await this.lottery.start_new_round({ value: parseEther('1001').toString() })
-    console.log('Deposited 1001 CLO')
-    await this.lottery.deposit({ value: parseEther('1001').toString() })
-    console.log('Deposited 1001 CLO')
+    await this.lottery.start_new_round({ value: parseEther('0.2').toString() })
+    console.log('User A deposited 0.2 CLO')
+    await this.lottery.deposit({ value: parseEther('0.2').toString() })
+    console.log('User A deposited 0.2 CLO')
+    await this.lottery.connect(this.challenger).deposit({ value: parseEther('0.2').toString() })
+    console.log('User B deposited 0.2 CLO')
+    await this.lottery.connect(this.challenger).deposit({ value: parseEther('0.2').toString() })
+    console.log('User B deposited 0.2 CLO')
+    await this.lottery.connect(this.challenger).deposit({ value: parseEther('0.2').toString() })
+    console.log('User B deposited 0.2 CLO')
+    await this.lottery.connect(this.challenger).deposit({ value: parseEther('0.2').toString() })
+    console.log('User B deposited 0.2 CLO')
+    await this.lottery.connect(this.challenger).deposit({ value: parseEther('0.2').toString() })
+    console.log('User B deposited 0.2 CLO')
+    await this.lottery.connect(this.challenger).deposit({ value: parseEther('0.2').toString() })
+    console.log('User B deposited 0.2 CLO')
+    await this.lottery.connect(this.challenger).deposit({ value: parseEther('0.2').toString() })
+    console.log('User B deposited 0.2 CLO')
     
     mineNext()
-    console.log('🏆 Round', (await this.lottery.get_round()).toString())
+    console.log('\n🏆 Round', (await this.lottery.get_round()).toString())
     
     // Use entropy
     await this.lottery.new_round_entropy()
-    await this.entropy.submit_entropy(_entropy_hash, {value: parseEther("100")})
+    await this.entropy.submit_entropy(_entropy_hash1, {value: parseEther("0.2")})
+    await this.entropy.connect(this.challenger).submit_entropy(_entropy_hash2, {value: parseEther("0.2")})
     mineNext()
-    console.log('entropy_hash:', (await this.entropy.entropy_providers(this.owner.address)).entropy_hash)
+    console.log('User A entropy_hash:', (await this.entropy.entropy_providers(this.owner.address)).entropy_hash)
+    console.log('User B entropy_hash:', (await this.entropy.entropy_providers(this.challenger.address)).entropy_hash)
     
     mineNext()
-    await this.entropy.reveal_entropy(parseEther("500"), 46)
+    await this.entropy.reveal_entropy(parseEther("100"), 12)
+    await this.entropy.connect(this.challenger).reveal_entropy(parseEther("200"), 34)
+    await this.entropy.connect(this.challenger).reveal_entropy(parseEther("200"), 34)
 
     mineNext()
-    console.log('entropy:', await this.entropy.get_entropy())
+    console.log('entropy:', formatEther(await this.entropy.get_entropy()))
   })
 
   it('finish round', async function () {
@@ -69,14 +94,17 @@ export default describe('Lottery', function () {
     console.log('round_reward:', formatEther(await this.lottery.round_reward()))
 
     mineNext()
-    let balance = await this.owner.getBalance()
-    console.log('balance of winner(1):', formatEther(balance))
+    const lastBalanceA = await this.owner.getBalance()
+    const lastBalanceB = await this.challenger.getBalance()
 
     mineNext()
-    await this.lottery.finish_round(this.owner.address)
+    await this.lottery.connect(this.owner).finish_round(this.owner.address)
+    await this.lottery.connect(this.challenger).finish_round(this.challenger.address)
 
     mineNext()
-    balance = await this.owner.getBalance()
-    console.log('balance of winner(2):', formatEther(balance))
+    const balanceA = await this.owner.getBalance()
+    const balanceB = await this.challenger.getBalance()
+    console.log(`User A: ${formatEther(lastBalanceA)} -> ${formatEther(balanceA)}`)
+    console.log(`User B: ${formatEther(lastBalanceB)} -> ${formatEther(balanceB)}`)
   })
 })

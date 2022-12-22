@@ -16,7 +16,7 @@ contract Entropy {
         bytes32 entropy_hash;
     }
     
-    uint256 public collateral_threshold = 100000 ether;     // Collateral for one entropy submission
+    uint256 public collateral_threshold = 0.2 ether;     // Collateral for one entropy submission
     mapping (bytes32=>bool) public prohibited_hashes;       // A mapping of already used entropy submissions
     mapping (address=>provider) public entropy_providers;   // A mapping of active entropy submissions of the round
     

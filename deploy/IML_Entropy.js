@@ -12,7 +12,7 @@ async function main() {
 
     addresses.IML_ENTROPY = deployment.address;
     fs.writeFileSync("./deploy/addresses.json", JSON.stringify(addresses, null, 2));
-    console.log("IML Entropy was deployed at: ", deployment.address);
+    console.log("✅ IML Entropy was deployed at: ", deployment.address);
 }
 
 main()

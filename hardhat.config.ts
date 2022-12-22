@@ -16,7 +16,7 @@ module.exports = {
     },
     compilers: [
       {
-        version: "0.8.12",
+        version: "0.8.0",
         settings: {
           optimizer: {
             enabled: true,
@@ -25,34 +25,7 @@ module.exports = {
         }
       },
       {
-        version: "0.8.4",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200
-          }
-        }
-      },
-      {
-        version: "0.6.12",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200
-          }
-        }
-      },
-      {
-        version: "0.5.17",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200
-          }
-        }
-      },
-      {
-        version: "0.4.17",
+        version: "0.5.1",
         settings: {
           optimizer: {
             enabled: true,
