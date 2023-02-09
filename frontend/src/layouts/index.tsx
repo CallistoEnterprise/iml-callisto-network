@@ -3,8 +3,7 @@ import PropTypes from "prop-types";
 import { Box } from "@mui/material";
 import styled from "@mui/styled-engine-sc";
 
-// import Topbar from "./Topbar";
-// import Footer from "./Footer";
+import ClaimModal from "components/ClaimModal";
 
 interface Props {
   children?: any;
@@ -13,9 +12,8 @@ interface Props {
 const Layout: React.FC<Props> = ({ children }: any) => {
   return (
     <StyledContainer>
-      {/* <Topbar /> */}
       <Body component="main">{children}</Body>
-      {/* <Footer /> */}
+      <ClaimModal />
     </StyledContainer>
   );
 };

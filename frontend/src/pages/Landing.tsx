@@ -62,8 +62,8 @@ const Landing: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-start flex-1 pl-[32.64px] pr-[13.16px] py-[33.19px]">
-        <div className="flex justify-between items-center overflow-auto w-full flex-wrap">
+      <div className="flex flex-col items-start flex-1 pl-[32.64px] pr-[13.16px] py-[33.19px] overflow-auto">
+        <div className="flex justify-between items-center w-full flex-wrap">
           <div className="flex items-center space-x-[45.13px]">
             <div className="flex flex-col space-y-[4.34px]">
               <span className="font-medium text-[20.96px] leading-[26.21px]">Good Afternoon, James</span>
@@ -95,13 +95,34 @@ const Landing: React.FC = () => {
             </svg>
           </div>
         </div>
-        <div className="flex items-start space-x-[30.26px] mt-[30.89px]">
+        <div className="flex items-start space-x-[30.26px] mt-[30.89px] w-full">
           <div className="flex flex-col space-y-[15.56px]">
             <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
               <div className="flex items-start bg-inputInner rounded-sm">
                 <div className="flex flex-col mt-[21.58px] mx-[33.4px] mb-[16.84px]">
                   <span className="font-medium text-[15px] leading-[18.75px]">0x232321651321651sda321d56a1321sasasssdsds</span>
                   <span className="mt-[5.6px] font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
+                  <div className="flex justify-between items-center mt-[21.91px]">
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">07</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Days</span>
+                    </div>
+                    <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">20</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Hours</span>
+                    </div>
+                    <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">50</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Min</span>
+                    </div>
+                    <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">41</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Sec</span>
+                    </div>
+                  </div>
                   <div className="flex items-center mt-[13.2px] space-x-[7.66px]">
                     <span className="font-medium text-[15px]">10.500</span>
                     <div className="w-3 h-3 bg-green2 rounded-[2px]" />
@@ -113,6 +134,149 @@ const Landing: React.FC = () => {
                     <img src="images/dollar.svg" alt="" />
                     <span className="mt-[20.78px] font-medium text-[28.26px] leading-[35.32px]">48.557</span>
                     <span className="mt-[27.7px] font-light text-[11px] leading-[14px] text-grey1 tracking-[-0.02em]">Total Deposit Pool</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+              <div className="flex items-start bg-inputInner rounded-sm">
+                <div className="flex flex-col mt-[21.58px] mx-[33.4px] mb-[16.84px]">
+                  <span className="font-medium text-[15px] leading-[18.75px]">0x232321651321651sda321d56a1321sasasssdsds</span>
+                  <span className="mt-[5.6px] font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
+                  <div className="flex justify-between items-center mt-[21.91px]">
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">07</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Days</span>
+                    </div>
+                    <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">20</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Hours</span>
+                    </div>
+                    <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">50</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Min</span>
+                    </div>
+                    <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">41</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Sec</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center mt-[13.2px] space-x-[7.66px]">
+                    <span className="font-medium text-[15px]">10.500</span>
+                    <div className="w-3 h-3 bg-green2 rounded-[2px]" />
+                  </div>
+                  <span className="mt-0.5 font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Minimal deposit to enter the lottery</span>
+                </div>
+                <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                  <div className="flex flex-col items-center bg-poolInner rounded-sm pt-[24.05px] pb-[16.35px] w-[186.01px]">
+                    <img src="images/dollar.svg" alt="" />
+                    <span className="mt-[20.78px] font-medium text-[28.26px] leading-[35.32px]">48.557</span>
+                    <span className="mt-[27.7px] font-light text-[11px] leading-[14px] text-grey1 tracking-[-0.02em]">Total Deposit Pool</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+              <div className="flex items-start bg-inputInner rounded-sm">
+                <div className="flex flex-col mt-[21.58px] mx-[33.4px] mb-[16.84px]">
+                  <span className="font-medium text-[15px] leading-[18.75px]">0x232321651321651sda321d56a1321sasasssdsds</span>
+                  <span className="mt-[5.6px] font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
+                  <div className="flex justify-between items-center mt-[21.91px]">
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">07</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Days</span>
+                    </div>
+                    <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">20</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Hours</span>
+                    </div>
+                    <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">50</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Min</span>
+                    </div>
+                    <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                    <div className="flex flex-col items-center">
+                      <span className="font-light text-[23.26px] leading-[29px]">41</span>
+                      <span className="font-light text-[10.2361px] leading-[13px] text-grey1">Sec</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center mt-[13.2px] space-x-[7.66px]">
+                    <span className="font-medium text-[15px]">10.500</span>
+                    <div className="w-3 h-3 bg-green2 rounded-[2px]" />
+                  </div>
+                  <span className="mt-0.5 font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Minimal deposit to enter the lottery</span>
+                </div>
+                <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                  <div className="flex flex-col items-center bg-poolInner rounded-sm pt-[24.05px] pb-[16.35px] w-[186.01px]">
+                    <img src="images/dollar.svg" alt="" />
+                    <span className="mt-[20.78px] font-medium text-[28.26px] leading-[35.32px]">48.557</span>
+                    <span className="mt-[27.7px] font-light text-[11px] leading-[14px] text-grey1 tracking-[-0.02em]">Total Deposit Pool</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm rounded-tl-[28px] overflow-hidden">
+            <div className="flex flex-col items-start bg-inputInner rounded-sm px-[33.4px] py-[26.31px]">
+              <span className="font-medium text-[20px] leading-[25px]">Details</span>
+              <div className="flex mt-[22.02px] w-full px-[1px] py-[1px] overflow-hidden space-x-[23.54px]">
+                <div className="flex flex-col items-start bg-creditBack bg-cover rounded-sm px-[16.6px] py-[21.39px] flex-1">
+                  <span className="font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Credit Card</span>
+                  <span className="font-light text-[11px] leading-[13.75px] mt-[33.87px]">Balance</span>
+                  <span className="font-medium text-[23.26px] leading-[29.08px] mt-[5.74px]">$767.50</span>
+                </div>
+                <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden flex-1">
+                  <div className="flex flex-col items-start bg-inputInner rounded-sm pl-[17.67px] pr-[25.12px] py-[19.39px]">
+                    <span className="font-medium text-[14px] leading-[17.5px]">Investation</span>
+                    <div className="flex flex-col mt-[13.56px] w-full space-y-[15.62px]">
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-[16.71px]">
+                          <div className="flex justify-center items-center bg-blue1 rounded-[7.62px] w-[40.29px] h-[40.29px]">
+                            <img src="images/currency1.svg" alt="" />
+                          </div>
+                          <div className="flex flex-col items-start space-y-[3px]">
+                            <span className="font-medium text-[18px] leading-[22.5px]">24</span>
+                            <span className="font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey6">Dollars</span>
+                          </div>
+                        </div>
+                        <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M1.5459 1.66833L7.5459 7.66833L1.5459 13.6683" stroke="#9E9E9E" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-[16.71px]">
+                          <div className="flex justify-center items-center bg-green3 rounded-[7.62px] w-[40.29px] h-[40.29px]">
+                            <img src="images/currency2.svg" alt="" />
+                          </div>
+                          <div className="flex flex-col items-start space-y-[3px]">
+                            <span className="font-medium text-[18px] leading-[22.5px]">24</span>
+                            <span className="font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey6">Pound Sterlinh</span>
+                          </div>
+                        </div>
+                        <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M1.5459 1.66833L7.5459 7.66833L1.5459 13.6683" stroke="#9E9E9E" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-[16.71px]">
+                          <div className="flex justify-center items-center bg-red1 rounded-[7.62px] w-[40.29px] h-[40.29px]">
+                            <img src="images/currency3.svg" alt="" />
+                          </div>
+                          <div className="flex flex-col items-start space-y-[3px]">
+                            <span className="font-medium text-[18px] leading-[22.5px]">24</span>
+                            <span className="font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey6">Uni Eropa - Euro</span>
+                          </div>
+                        </div>
+                        <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M1.5459 1.66833L7.5459 7.66833L1.5459 13.6683" stroke="#9E9E9E" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
