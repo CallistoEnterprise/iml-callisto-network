@@ -206,3 +206,8 @@ article {
   background: #51B56D;
   border-radius: 9px;
 }
+
+.chart-container >canvas {
+  width: auto !important;
+  height: auto !important;
+}
