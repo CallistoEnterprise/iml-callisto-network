@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Auth: React.FC = () => {
   const [remember, setRemember] = useState(false);
@@ -15,7 +16,7 @@ const Auth: React.FC = () => {
           <div className="ml-[23.34px] text-[15px] leading-[18.75px] text-grey1">Email</div>
           <div className="w-full mt-2 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
             <div className="px-[23.34px] py-[14.08px] bg-inputInner rounded-sm">
-              <input className="text-[15px] leading-[18.75px] text-white" placeholder="Your Email" />
+              <input className="text-[15px] leading-[18.75px] text-white w-full" placeholder="Your Email" />
             </div>
           </div>
           <div className="mt-[14.15px] ml-[23.34px] text-[15px] leading-[18.75px] text-grey1">
@@ -24,7 +25,7 @@ const Auth: React.FC = () => {
           <div className="w-full mt-2 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
             <div className="px-[23.34px] py-[14.08px] bg-inputInner rounded-sm">
               <input
-                className="text-[15px] leading-[18.75px] text-white"
+                className="text-[15px] leading-[18.75px] text-white w-full"
                 placeholder="Your Password"
               />
             </div>
@@ -38,9 +39,9 @@ const Auth: React.FC = () => {
           </button>
           <div className="text-[12.92px] leading-[16.15px] text-grey1">Remember me</div>
         </div>
-        <button className="flex justify-center w-full py-[13.17px] mt-[15.96px] bg-green1 rounded-sm text-[15px] leading-[18.75px]">
+        <Link to="/" className="flex justify-center w-full py-[13.17px] mt-[15.96px] bg-green1 rounded-sm text-[15px] leading-[18.75px]">
           SIGN IN
-        </button>
+        </Link>
 
         <div className="flex items-center space-x-[3.21px] mt-8 text-[12.5px] leading-[15.63px]">
           <span>Don’t have an account?</span>
