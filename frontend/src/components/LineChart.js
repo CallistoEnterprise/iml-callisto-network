@@ -2,7 +2,7 @@ import React from "react";
 import { Line } from "react-chartjs-2";
 import "chart.js/auto";
 
-const LineChart = ({ chartData }: any) => {
+const LineChart = ({ chartData }) => {
   return (
     <div className="chart-container w-full">
       <Line

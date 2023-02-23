@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-const Auth: React.FC = () => {
+const Auth = () => {
   const [remember, setRemember] = useState(false);
   return (
     <div className="fixed top-1/2 -translate-y-1/2 w-full flex justify-center items-center gap-[125.5px]">

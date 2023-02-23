@@ -1,6 +1,6 @@
 import React from "react";
 
-const Network: React.FC = () => {
+const Network = () => {
   return (
     <div className="fixed top-1/2 -translate-y-1/2 w-full flex justify-center items-center gap-[125.5px]">
       <div className="flex flex-col items-start w-[355.77px]">

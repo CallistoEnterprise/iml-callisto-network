@@ -24,10 +24,3 @@ const useWindowDimensions = () => {
 }
 
 export default useWindowDimensions;
-
-// const screenWidth = useWindowDimensions().width
-// const [isMobile, setIsMobile] = useState(false)
-
-// useEffect(() => {
-//     screenWidth > 992 ? setIsMobile(false) : setIsMobile(true)
-// }, [screenWidth])

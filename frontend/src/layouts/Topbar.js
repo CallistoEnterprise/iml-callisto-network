@@ -1,6 +1,6 @@
 import React from "react";
 
-const Topbar: React.FC = () => {
+const Topbar = () => {
   return (
     <div className="fixed z-1 w-full">
       Topbar
