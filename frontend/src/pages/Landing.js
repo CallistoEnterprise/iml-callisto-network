@@ -98,8 +98,8 @@ const Landing = () => {
         </div>
       </div>
       <div className="flex flex-col items-start flex-1 pl-[32.64px] pr-[13.16px] py-[33.19px] overflow-auto">
-        <div className="flex justify-between items-center w-full flex-wrap">
-          <div className="flex items-center space-x-[45.13px]">
+        <div className="flex justify-end 1xl:justify-between items-center w-full flex-wrap">
+          <div className="hidden 1xl:flex items-center space-x-[45.13px]">
             <div className="flex flex-col space-y-[4.34px]">
               <span className="font-medium text-[20.96px] leading-[26.21px]">Good Afternoon, James</span>
               <span className="font-light text-[12.61px] leading-[15.76px] text-grey1">Arcu penatibus lacus varius.</span>
@@ -113,7 +113,7 @@ const Landing = () => {
               </div>
             </div>
           </div>
-          <div className="flex items-center pr-[73.53px]">
+          <div className="flex items-center 1xl:pr-[73.53px]">
             <svg className="cursor-pointer" width="22" height="17" viewBox="0 0 22 17" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fillRule="evenodd" clipRule="evenodd" d="M2.69362 16.1806H19.2715C20.2368 16.1806 21.0342 15.3831 21.0342 14.4179V2.58253C21.0342 1.61724 20.2368 0.819824 19.2715 0.819824H2.69362C1.72833 0.819824 0.930908 1.61724 0.930908 2.58253V14.4179C0.930908 15.3831 1.72833 16.1806 2.69362 16.1806ZM2.08204 2.38932C2.14519 2.13196 2.36859 1.95299 2.65165 1.95299H19.2295C19.5008 1.95299 19.7172 2.11735 19.7904 2.35755L12.6404 9.50752C11.7171 10.4308 10.1642 10.4308 9.24091 9.50752L2.08204 2.38932ZM2.06408 3.96748V12.9491L6.55488 8.45829L2.06408 3.96748ZM2.08181 14.5262L7.3523 9.2557L8.4435 10.3469C9.11501 11.0184 9.99636 11.3961 10.9197 11.3961C11.843 11.3961 12.7244 11.0184 13.3959 10.3469L14.4871 9.2557L19.7904 14.559C19.7172 14.7991 19.5007 14.9635 19.2295 14.9635H2.65165C2.36825 14.9635 2.14465 14.784 2.08181 14.5262ZM19.8171 12.9909V3.9257L15.2845 8.45829L19.8171 12.9909Z" fill="white"/>
             </svg>
@@ -130,11 +130,11 @@ const Landing = () => {
             </svg>
           </div>
         </div>
-        <div className="flex items-start space-x-[30.26px] mt-[30.89px] w-full">
-          <div className="flex flex-col space-y-[15.56px]">
+        <div className="flex flex-col lg:flex-row items-start space-y-[30px] lg:space-x-[30.26px] lg:space-y-0 mt-[30.89px] w-full overflow-auto">
+          <div className="flex-1 flex flex-col space-y-[15.56px]">
             <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-              <div className="flex items-start bg-inputInner rounded-sm">
-                <div className="flex flex-col mt-[21.58px] mx-[33.4px] mb-[16.84px]">
+              <div className="flex flex-col lg:flex-row items-start bg-inputInner rounded-sm">
+                <div className="flex flex-col flex-1 mt-[21.58px] mx-[33.4px] mb-[16.84px]">
                   <span className="font-medium text-[15px] leading-[18.75px]">0x232321651321651sda321d56a1321sasasssdsds</span>
                   <span className="mt-[5.6px] font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
                   <div className="flex justify-between items-center mt-[21.91px]">
@@ -164,8 +164,8 @@ const Landing = () => {
                   </div>
                   <span className="mt-0.5 font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Minimal deposit to enter the lottery</span>
                 </div>
-                <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                  <div className="flex flex-col items-center bg-poolInner rounded-sm pt-[24.05px] pb-[16.35px] w-[186.01px]">
+                <div className="w-full lg:w-[186.01px] px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                  <div className="flex flex-col items-center bg-poolInner rounded-sm pt-[24.05px] pb-[16.35px]">
                     <img src="images/dollar.svg" alt="" />
                     <span className="mt-[20.78px] font-medium text-[28.26px] leading-[35.32px]">48.557</span>
                     <span className="mt-[27.7px] font-light text-[11px] leading-[14px] text-grey1 tracking-[-0.02em]">Total Deposit Pool</span>
@@ -174,8 +174,8 @@ const Landing = () => {
               </div>
             </div>
             <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-              <div className="flex items-start bg-inputInner rounded-sm">
-                <div className="flex flex-col mt-[21.58px] mx-[33.4px] mb-[16.84px]">
+              <div className="flex flex-col lg:flex-row items-start bg-inputInner rounded-sm">
+                <div className="flex flex-col flex-1 mt-[21.58px] mx-[33.4px] mb-[16.84px]">
                   <span className="font-medium text-[15px] leading-[18.75px]">0x232321651321651sda321d56a1321sasasssdsds</span>
                   <span className="mt-[5.6px] font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
                   <div className="flex justify-between items-center mt-[21.91px]">
@@ -205,8 +205,8 @@ const Landing = () => {
                   </div>
                   <span className="mt-0.5 font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Minimal deposit to enter the lottery</span>
                 </div>
-                <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                  <div className="flex flex-col items-center bg-poolInner rounded-sm pt-[24.05px] pb-[16.35px] w-[186.01px]">
+                <div className="w-full lg:w-[186.01px] px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                  <div className="flex flex-col items-center bg-poolInner rounded-sm pt-[24.05px] pb-[16.35px]">
                     <img src="images/dollar.svg" alt="" />
                     <span className="mt-[20.78px] font-medium text-[28.26px] leading-[35.32px]">48.557</span>
                     <span className="mt-[27.7px] font-light text-[11px] leading-[14px] text-grey1 tracking-[-0.02em]">Total Deposit Pool</span>
@@ -215,8 +215,8 @@ const Landing = () => {
               </div>
             </div>
             <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-              <div className="flex items-start bg-inputInner rounded-sm">
-                <div className="flex flex-col mt-[21.58px] mx-[33.4px] mb-[16.84px]">
+              <div className="flex flex-col lg:flex-row items-start bg-inputInner rounded-sm">
+                <div className="flex flex-col flex-1 mt-[21.58px] mx-[33.4px] mb-[16.84px]">
                   <span className="font-medium text-[15px] leading-[18.75px]">0x232321651321651sda321d56a1321sasasssdsds</span>
                   <span className="mt-[5.6px] font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
                   <div className="flex justify-between items-center mt-[21.91px]">
@@ -246,8 +246,8 @@ const Landing = () => {
                   </div>
                   <span className="mt-0.5 font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Minimal deposit to enter the lottery</span>
                 </div>
-                <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                  <div className="flex flex-col items-center bg-poolInner rounded-sm pt-[24.05px] pb-[16.35px] w-[186.01px]">
+                <div className="w-full lg:w-[186.01px] px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                  <div className="flex flex-col items-center bg-poolInner rounded-sm pt-[24.05px] pb-[16.35px]">
                     <img src="images/dollar.svg" alt="" />
                     <span className="mt-[20.78px] font-medium text-[28.26px] leading-[35.32px]">48.557</span>
                     <span className="mt-[27.7px] font-light text-[11px] leading-[14px] text-grey1 tracking-[-0.02em]">Total Deposit Pool</span>
@@ -256,7 +256,7 @@ const Landing = () => {
               </div>
             </div>
             <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-              <div className="w-full flex flex-col items-start bg-inputInner rounded-sm pt-[18.52px] pb-[17.31px] pl-[19.16px] pr-[30.13px]">
+              <div className="w-full max-w-[1000px] flex flex-col items-start bg-inputInner rounded-sm pt-[18.52px] pb-[17.31px] pl-[19.16px] pr-[30.13px]">
                 <div className="flex justify-between items-center w-full mb-6">
                   <span className="font-light text-[12px] leading-[15px] text-white">Money Earned From</span>
                   <div className="flex items-center space-x-[11.5px]">
@@ -272,7 +272,7 @@ const Landing = () => {
               </div>
             </div>
           </div>
-          <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm rounded-tl-[28px] overflow-hidden">
+          <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm rounded-tl-[28px] overflow-hidden min-w-[451.36px]">
             <div className="flex flex-col items-start bg-inputInner rounded-sm px-[33.4px] py-[26.31px]">
               <span className="font-medium text-[20px] leading-[25px]">Details</span>
               <div className="flex mt-[22.02px] w-full px-[1px] py-[1px] overflow-hidden space-x-[23.54px]">

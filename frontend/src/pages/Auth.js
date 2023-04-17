@@ -49,7 +49,7 @@ const Auth = () => {
         </div>
       </div>
 
-      <img src="images/auth-side.png" alt="" />
+      <img className="hidden w-[500px] xl:w-auto lg:block" src="images/auth-side.png" alt="" />
     </div>
   );
 };

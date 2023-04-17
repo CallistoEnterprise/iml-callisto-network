@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        "1xl": { 'min': '1200px' },
+      },
       colors: {
         "black1": "#0C0C0D",
         "black2": "#2B2B2E",

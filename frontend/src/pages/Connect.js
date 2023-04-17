@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Web3 from "web3";
 import { useNavigate } from "react-router-dom"
 import useAuth from "../hooks/useAuth";
-import { change } from "../utils/web3React";
 import { connections, connectorLocalStorageKey } from "../pages/entry";
 
 const Connect = () => {
@@ -18,13 +17,9 @@ const Connect = () => {
         await window.ethereum.enable();
         window.web3 = new Web3(window.ethereum);
 
-        const _chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        if (_chainId !== "0x1") await change();
-        else {
-          await signin(connections[walletId % 2].connectorId);
-          window.localStorage.setItem(connectorLocalStorageKey, connections[walletId % 2].connectorId);
-          nav("/")
-        }
+        await signin(connections[walletId % 2].connectorId);
+        window.localStorage.setItem(connectorLocalStorageKey, connections[walletId % 2].connectorId);
+        nav("/")
       } else alert("Install metamask");
     }
     if (walletId % 2 === 1) {
@@ -65,7 +60,7 @@ const Connect = () => {
           CONNECT
         </button>
       </div>
-      <img src="images/auth-side.png" alt="" />
+      <img className="hidden w-[500px] xl:w-auto lg:block" src="images/auth-side.png" alt="" />
     </div>
   );
 };

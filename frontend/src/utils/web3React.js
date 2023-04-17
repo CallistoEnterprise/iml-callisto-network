@@ -29,29 +29,26 @@ export const getLibrary = (provider) => {
   return provider
 }
 
-export const change = async () => {
+export const changeChain = async (chainId, chainName, symbol, decimals, rpc) => {
   try {
     await window.ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: "0x1" }],
-    });
-    document.location.reload();
-  } catch (e) {
-    if(e.code === 4902) {
-      await window.ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: "0x1",
-            chainName: "Ethereum Mainnet",
-            nativeCurrency: {
-              symbol: "CLO",
-              decimals: 18,
-            },
-            rpcUrls: ["https://mainnet.infura.io/v3/a47cfbd514324d3f866b5610325b047e"],
+      method: "wallet_addEthereumChain",
+      params: [
+        {
+          chainId,
+          chainName,
+          nativeCurrency: {
+            symbol,
+            decimals,
           },
-        ],
-      });  
-    }
+          rpcUrls: [rpc],
+        },
+      ],
+    });  
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId }],
+    });
+  } catch (e) {
   }
 };
