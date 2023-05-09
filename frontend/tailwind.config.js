@@ -6,18 +6,22 @@ module.exports = {
   theme: {
     extend: {
       screens: {
+        "sm": { 'min': '600px' },
         "1xl": { 'min': '1200px' },
       },
       colors: {
         "black1": "#0C0C0D",
         "black2": "#2B2B2E",
         "blue1": "#75A3FE",
+        "blue2": "#524EEE",
         "grey1": "#717171",
         "grey2": "#7C7C7C",
         "grey3": "#484848",
         "grey4": "#343434",
         "grey5": "#2E3540",
         "grey6": "#929292",
+        "grey7": "#2B2B2B",
+        "grey8": "#393939",
         "green1": "#34C88A",
         "green2": "#51B56D",
         "green3": "#36DDAB",
@@ -31,8 +35,11 @@ module.exports = {
         "claim": "linear-gradient(101.49deg, rgba(217, 217, 217, 0.47) 2.84%, rgba(217, 217, 217, 0.28) 135.8%)",
         "creditBack": "radial-gradient(#9A9A9A 100%, #313131 48%)",
         "pp": "url('/public/images/Component 1.png')",
+        "pp1": "url('/public/images/Component 2.png')",
+        "pad": "linear-gradient(122.37deg, rgba(31, 30, 30, 0.68) 0%, rgba(40, 40, 40, 0.81) 98.28%)",
       },
       borderRadius: {
+        "tiny": "5px",
         "sm": "9px",
       }
     },

@@ -3,9 +3,11 @@ import Web3 from "web3";
 import { useNavigate } from "react-router-dom"
 import useAuth from "../hooks/useAuth";
 import { connections, connectorLocalStorageKey } from "../pages/entry";
+import { useWeb3React } from "@web3-react/core";
 
 const Connect = () => {
   const { login: signin } = useAuth();
+  const {account} = useWeb3React()
 
   const nav = useNavigate()
 
