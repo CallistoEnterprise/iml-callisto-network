@@ -4,7 +4,6 @@ import { Contract, Provider, setMulticallAddress } from "ethers-multicall";
 import { useNavigate } from "react-router-dom";
 import { Tooltip } from "@mui/material";
 import { ethers } from "ethers";
-import Toastify from 'toastify-js';
 import useAuth from "../hooks/useAuth";
 import Footer from "../layouts/Footer";
 import { useEntropy, useLottery } from "../hooks/useContract";
