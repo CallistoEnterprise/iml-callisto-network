@@ -172,7 +172,7 @@ const Dashboard = () => {
   }, [doing, lotteryContract]);
 
   useMemo(async () => {
-    if (account) {
+    if (account && doing === false) {
       setBalance(await window.web3.eth.getBalance(account))
     }
   }, [account, doing])
