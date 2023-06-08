@@ -175,7 +175,7 @@ const Dashboard = () => {
     if (account) {
       setBalance(await window.web3.eth.getBalance(account))
     }
-  }, [account])
+  }, [account, doing])
 
   useEffect(() => {
     if (loaded) {
@@ -573,24 +573,26 @@ const Dashboard = () => {
               </div> */}
               </div>
             </div>
-            <div className="lg:px-[1px] lg:py-[1px] lg:bg-inputOuter rounded-sm px-6 lg:px-0">
-              <div className="flex flex-col items-start lg:bg-inputInner rounded-sm lg:pl-[23.05px] lg:pr-[23.31px] lg:py-[18.77px]">
-                <span className="font-medium text-[20px] leading-[25px]">Participants</span>
-                <div className="flex flex-col space-y-[13px] mt-[10px] w-full px-[1px] py-[1px] overflow-hidden text-black3 font-normal text-[12px]">
-                  {loaded && (status === 1 || status === 2) ?
-                    (depositData.length > 0 ?
-                      depositData.map((x, i) =>
-                        <span key={i}>{x.depositor} : {x.amount_deposited} CLO : chance to win {x.percent}%</span>
+            {(status === 1 || status === 2) &&
+              <div className="lg:px-[1px] lg:py-[1px] lg:bg-inputOuter rounded-sm px-6 lg:px-0">
+                <div className="flex flex-col items-start lg:bg-inputInner rounded-sm lg:pl-[23.05px] lg:pr-[23.31px] lg:py-[18.77px]">
+                  <span className="font-medium text-[20px] leading-[25px]">Participants</span>
+                  <div className="flex flex-col space-y-[13px] mt-[10px] w-full px-[1px] py-[1px] overflow-hidden text-black3 font-normal text-[12px]">
+                    {loaded ?
+                      (depositData.length > 0 ?
+                        depositData.map((x, i) =>
+                          <span key={i}>{x.depositor} : {x.amount_deposited} CLO : chance to win {x.percent}%</span>
+                        )
+                        :
+                        <span>There are no participants.</span>
                       )
                       :
-                      <span>There are no participants.</span>
-                    )
-                    :
-                    <span>The info is loading...</span>
-                  }
+                      <span>The info is loading...</span>
+                    }
+                  </div>
                 </div>
               </div>
-            </div>
+            }
           </div>
         </div>
         <Footer />
