@@ -3,8 +3,8 @@ import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { BscConnector } from '@binance-chain/bsc-connector'
 
 const POLLING_INTERVAL = 12000
-const rpcUrl = 'https://mainnet.infura.io/v3/a47cfbd514324d3f866b5610325b047e'
-const chainId = 1
+const rpcUrl = 'https://rpc.callisto.network/'
+const chainId = 820
 
 const injected = new InjectedConnector({ supportedChainIds: [chainId] })
 

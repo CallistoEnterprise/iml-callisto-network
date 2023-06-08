@@ -8,10 +8,12 @@ module.exports = {
       screens: {
         "sm": { 'min': '600px' },
         "1xl": { 'min': '1200px' },
+        "2xl": { 'min': '1236px' },
       },
       colors: {
         "black1": "#0C0C0D",
         "black2": "#2B2B2E",
+        "black3": "#AAA",
         "blue1": "#75A3FE",
         "blue2": "#524EEE",
         "grey1": "#717171",

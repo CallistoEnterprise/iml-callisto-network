@@ -1,52 +1,75 @@
 import React, { useEffect, useState } from "react";
 import Web3 from "web3";
 import { useNavigate } from "react-router-dom"
-import useAuth from "../hooks/useAuth";
 import { connections, connectorLocalStorageKey } from "../pages/entry";
-import { useWeb3React } from "@web3-react/core";
+import useAuth from "../hooks/useAuth";
 
 const Connect = () => {
   const { login: signin } = useAuth();
-  const {account} = useWeb3React()
 
   const nav = useNavigate()
 
   const [walletId, setWalletId] = useState(2000)
 
   const handleConnect = async () => {
-    if (walletId % 2 === 0) {
-      if (window.ethereum) {
-        await window.ethereum.enable();
-        window.web3 = new Web3(window.ethereum);
+    try {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: "0x334" }],
+      });
+      if (walletId % 2 === 0) {
+        if (window.ethereum) {
+          await window.ethereum.enable();
+          window.web3 = new Web3(window.ethereum);
 
+          await signin(connections[walletId % 2].connectorId);
+          window.localStorage.setItem(connectorLocalStorageKey, connections[walletId % 2].connectorId);
+          nav("/")
+        } else alert("Install metamask");
+      }
+      if (walletId % 2 === 1) {
         await signin(connections[walletId % 2].connectorId);
         window.localStorage.setItem(connectorLocalStorageKey, connections[walletId % 2].connectorId);
         nav("/")
-      } else alert("Install metamask");
-    }
-    if (walletId % 2 === 1) {
-      await signin(connections[walletId % 2].connectorId);
-      window.localStorage.setItem(connectorLocalStorageKey, connections[walletId % 2].connectorId);
-      nav("/")
+      }
+    } catch (e) {
+      if (e.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: "0x334",
+                chainName: "Callisto Network",
+                rpcUrls: ["https://rpc.callisto.network/"],
+                nativeCurrency: {
+                  name: "CLO",
+                  symbol: "CLO",
+                  decimals: 18,
+                }
+              },
+            ],
+          });
+        } catch (e) {
+          console.log(e);
+        }
+      }
     }
   };
   useEffect(() => {
     if (window.ethereum) {
       window.ethereum.on("chainChanged", function (networkId) {
-        document.location.reload()
+        if(networkId !== "0x334") document.location.reload()
       });
     }
   }, [])
 
   return (
     <div className="fixed top-1/2 -translate-y-1/2 w-full flex justify-center items-center gap-[125.5px]">
-      <div className="flex flex-col items-start w-[354.41px]">
-        <img src="images/logo.svg" alt="" />
-        <div className="mt-[27.22px] text-[20.96px] leading-[26.21px] text-white">Connect Wallet</div>
-        <div className="mt-[4.7px] text-[12.61px] leading-[15.76px] text-grey1">
-          Pulvinar varius nulla maecenas
-        </div>
-        <div className="flex flex-col items-start mt-[30.51px] w-full">
+      <div className="flex flex-col items-center w-[354.41px]">
+        <img className="h-[69px]" src="images/network/logo.png" alt="" />
+        <div className="mt-[37px] text-[20.96px] leading-[26.21px] text-white">Select network</div>
+        <div className="flex flex-col items-start mt-[57.87px] w-full">
           <div className="w-full h-[192.36px] mt-2 px-[1px] py-[1px] bg-inputOuter rounded-sm relative">
             <div className="flex justify-center items-center h-full px-[23.34px] py-[14.08px] bg-inputInner rounded-sm">
               <img src={connections[walletId % 2].image} alt="" />
