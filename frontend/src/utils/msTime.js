@@ -64,3 +64,16 @@ export const toast = (text) => {
         onClick: function () { } // Callback after click
     }).showToast()
 }
+
+export const sumPercent = (data) => {
+    let _new = [];
+    data.forEach(each => {
+        if(_new.find(x => x.depositor === each.depositor)) {
+            _new[_new.findIndex(x => x.depositor === each.depositor)].amount_deposited += each.amount_deposited
+            _new[_new.findIndex(x => x.depositor === each.depositor)].percent += each.percent
+        } else {
+            _new.push(each)
+        }
+    });
+    return _new;
+}

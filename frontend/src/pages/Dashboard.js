@@ -8,26 +8,24 @@ import useAuth from "../hooks/useAuth";
 import Footer from "../layouts/Footer";
 import { useEntropy, useLottery } from "../hooks/useContract";
 import { ROUTERS } from "../contracts/config";
-import { copy, secondsToDhms, toast } from "../utils/msTime";
+import { copy, secondsToDhms, sumPercent, toast } from "../utils/msTime";
 
 const Dashboard = () => {
   const [total, setTotal] = useState()
   const [copiedCode, setCopiedCode] = useState(false);
   const [payload, setPayload] = useState("0")
-  const [payloadForReveal, setPayloadForReveal] = useState("0")
-  const [entropyHash, setEntropyHash] = useState("")
+  const [payloadForReveal, setPayloadForReveal] = useState(Math.floor(Math.random() * 90000000000).toString())
   const [doing, setDoing] = useState(false)
   const [loaded, setLoaded] = useState(false)
   const [minAllowedBet, setMinAllowedBet] = useState(0)
   const [roundId, setRoundId] = useState(0), [, setRoundRewardPaid] = useState()
   const [depositData, setDepositData] = useState([])
   const [balance, setBalance] = useState(0)
-  // const [, setPrice] = useState(0)
   const [status, setStatus] = useState("-1")
   const [, setCurrentRound] = useState()
-  const [salt, setSalt] = useState()
-  const [saltForReveal, setSaltForReveal] = useState()
-  const [enAmount, setEnAmount] = useState()
+  const [salt, setSalt] = useState(Math.floor(Math.random() * 90000000000).toString())
+  const [saltForReveal, setSaltForReveal] = useState(Math.floor(Math.random() * 90000000000).toString())
+  const [amount, setAmount] = useState()
   const [[dys, hrs, mins, secs], setTime] = useState([0, 0, 0, 0])
 
   const nav = useNavigate()
@@ -59,23 +57,12 @@ const Dashboard = () => {
     }
     setDoing(false)
   }
-  const handleProvideEntropy = async () => {
-    setDoing(true)
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      setEntropyHash(await entropyContract.connect(provider.getSigner()).test_hash(payload, salt))
-      toast("Entropy is provided")
-    } catch (e) {
-      console.log(e)
-    }
-    setDoing(false)
-  }
   const handleSubmitEntropy = async () => {
     setDoing(true)
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
-      await (await entropyContract.connect(provider.getSigner()).submit_entropy(entropyHash, { value: enAmount })).wait()
-      setEntropyHash("")
+      const entropyHash = await entropyContract.connect(provider.getSigner()).test_hash(payload, salt)
+      await (await entropyContract.connect(provider.getSigner()).submit_entropy(entropyHash, { value: amount })).wait()
       toast("Entropy is submitted")
     } catch (e) {
       console.log(e)
@@ -83,6 +70,7 @@ const Dashboard = () => {
     setDoing(false)
   }
   const handleGenerateSalt = async () => setSalt(Math.floor(Math.random() * 90000000000).toString())
+  const handleGenerateEntropy = async () => setPayload(Math.floor(Math.random() * 90000000000).toString())
   const handleRevealEntropy = async () => {
     setDoing(true)
     try {
@@ -118,8 +106,6 @@ const Dashboard = () => {
     }
   }
   useMemo(async () => {
-    // const { data: { callisto: { usd: _price } } } = await axios.get("https://api.coingecko.com/api/v3/simple/price?ids=callisto&vs_currencies=usd")
-    // setPrice(_price)
     if (doing === false) {
       const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
       const ethcallProvider = new Provider(provider);
@@ -150,9 +136,7 @@ const Dashboard = () => {
       })
       let sum = 0; _depositData.forEach(x => sum += parseFloat(x.amount_deposited));
       const _depositDataWithPercent = _depositData.map(x => {
-        return {
-          ...x, percent: x.amount_deposited / sum * 100
-        }
+        return { ...x, amount_deposited: parseFloat(x.amount_deposited), percent: x.amount_deposited / sum * 100 }
       })
       setTotal(_total)
       setMinAllowedBet(multiResult[0])
@@ -166,7 +150,7 @@ const Dashboard = () => {
       if (multiResult[2] === 1) deadline = d1
       if (multiResult[2] === 2) deadline = d2
       setTime([secondsToDhms(new Date(), deadline).dDisplay, secondsToDhms(new Date(), deadline).hDisplay, secondsToDhms(new Date(), deadline).mDisplay, secondsToDhms(new Date(), deadline).sDisplay])
-      setDepositData(_depositDataWithPercent)
+      setDepositData(sumPercent(_depositDataWithPercent))
       setLoaded(true)
     }
   }, [doing, lotteryContract]);
@@ -254,7 +238,7 @@ const Dashboard = () => {
           <div className="hidden 2xl:flex flex-1 justify-between items-center space-x-[45.13px]">
             <div className="flex flex-col space-y-[4.34px]">
               <span className="font-medium text-[20.96px] leading-[26.21px]">Immortal Lottery</span>
-              <span className="font-light text-[12.61px] leading-[15.76px] text-grey1">Arcu penatibus lacus varius.</span>
+              <span className="font-light text-[12.61px] leading-[15.76px] text-grey1">The first fully transparent DAPP with a verifiable on-chain randomness</span>
             </div>
             <div className="w-[355.89px] px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
               <div className="flex items-center space-x-[17.69px] px-[17.39px] py-[15.46px] bg-inputInner rounded-sm">
@@ -287,9 +271,6 @@ const Dashboard = () => {
                   {copiedCode && <span className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-max text-[12px]">Copied</span>}
                 </div>
               </div>
-              {/* <svg className="ml-[7.45px]" width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8.81348 1.10254L4.94153 4.97449L1.06958 1.10254" stroke="white" strokeWidth="0.967987" strokeLinecap="round" />
-              </svg> */}
             </div>
             :
             <button className="flex justify-center items-center px-3 sm:px-6 h-[32.36px] rounded-tiny sm:rounded-sm bg-green1 disabled:opacity-50 disabled:cursor-not-allowed" onClick={() => nav("/connect")} disabled={doing}>Connect wallet</button>
@@ -300,7 +281,7 @@ const Dashboard = () => {
             <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
               <div className="flex bg-inputInner rounded-sm">
                 <div className="flex flex-col flex-1 px-[19px] py-[9px] sm:pt-[21.58px] sm:px-[33.4px] sm:pb-[16.84px]">
-                  <span className="font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]">{ROUTERS.LOTTERY.address}</span>
+                  <a className="font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]" href="https://explorer.callisto.network/address/0x97434C6863F4512d2630AA2c809E01DBf99d824B" target="_blank" rel="noreferrer">{ROUTERS.LOTTERY.address}</a>
                   <span className="mt-[2.92px] sm:mt-[5.6px] font-light text-[8px] sm:text-[11px] leading-[8px] sm:leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
                   {loaded ?
                     <span className="mt-3 sm:mt-[21.91px] font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]">Round {roundId}</span>
@@ -349,40 +330,31 @@ const Dashboard = () => {
                   }
                   {loaded && account &&
                     <div className="flex justify-end items-center space-x-3 mt-[19.3px] font-light text-[8px] sm:text-[12px] leading-[8px] sm:leading-[15px] tracking-[0.02em]">
-                      {status === 0 &&
-                        <>
-                          {/* <div className="w-[100px] px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                            <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Amount" value={newAmount} onChange={(e) => setNewAmount(e.target.value)} type="number" />
-                            </div>
-                          </div> */}
-                          <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-blue2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleStartRound} disabled={doing}>Start New Round</button>
-                        </>
-                      }
+                      {status === 0 && <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-blue2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleStartRound} disabled={doing}>Start New Round</button>}
                       {status === 1 &&
                         <div className="flex flex-col w-full">
                           <div className="flex space-x-3 justify-end">
                             <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleDeposit} disabled={doing}>Deposit</button>
                           </div>
-                          <span className="mt-5 font-light text-[12.61px] leading-[15.76px] text-white">Or use entropy</span>
+                          <span className="mt-5 font-light text-[12.61px] leading-[15.76px] text-white">Become Entropy Provider</span>
                           <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                             <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Payload" type="number" value={payload} onChange={e => setPayload(e.target.value)} />
+                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Entropy" type="number" value={payload} onChange={e => setPayload(e.target.value)} />
                             </div>
                           </div>
                           <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                             <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-grey1 placeholder-grey1" placeholder="Salt" value={salt} readOnly />
+                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-grey1 placeholder-grey1" placeholder="Salt" type="number" value={salt} onChange={e => setSalt(e.target.value)} />
                             </div>
                           </div>
                           <div className="flex justify-end items-center space-x-3 mt-2">
-                            <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-red1 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateSalt} disabled={doing}>Generate Salt</button>
-                            <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleProvideEntropy} disabled={doing}>Provide Entropy</button>
+                            <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-blue2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateSalt} disabled={doing}>Generate Salt</button>
+                            <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateEntropy} disabled={doing}>Generate Entropy</button>
                           </div>
                           <div className="flex items-center space-x-3 mt-2">
                             <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                               <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                                <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Amount" value={enAmount} onChange={(e) => setEnAmount(e.target.value)} type="number" />
+                                <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} type="number" />
                               </div>
                             </div>
                             <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleSubmitEntropy} disabled={doing || entropyHash === ""}>Submit Entropy</button>
@@ -392,14 +364,14 @@ const Dashboard = () => {
                       }
                       {status === 2 &&
                         <div className="flex flex-col space-y-2 w-full">
-                          <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                          <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                             <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Payload" type="number" value={payloadForReveal} onChange={e => setPayloadForReveal(e.target.value)} />
+                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Entropy" type="number" value={payloadForReveal} onChange={e => setPayloadForReveal(e.target.value)} />
                             </div>
                           </div>
                           <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden w-full">
                             <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Salt" value={saltForReveal} onChange={(e) => setSaltForReveal(e.target.value)} type="number" />
+                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Salt" type="number" value={saltForReveal} onChange={(e) => setSaltForReveal(e.target.value)} />
                             </div>
                           </div>
                           <div className="flex justify-end items-center space-x-3 mt-2">
@@ -411,7 +383,7 @@ const Dashboard = () => {
                     </div>
                   }
                 </div>
-                <Tooltip title="This shows total mount of money locked in this pool.">
+                <Tooltip title="This shows total mount of funds locked in this pool.">
                   <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                     <div className="flex flex-col justify-between items-center bg-poolInner rounded-sm pt-5 sm:pt-[24.05px] pb-3 sm:pb-[28.03px] px-[22px] sm:px-[50px] h-full">
                       <img className="w-[27.24px] h-[27.24px] sm:w-auto sm:h-auto" src="images/dollar.svg" alt="" />
@@ -474,9 +446,9 @@ const Dashboard = () => {
                 <span className="font-medium text-[20px] leading-[25px]">Details</span>
                 <div className="flex flex-col space-y-[13px] mt-[10px] w-full px-[1px] py-[1px] overflow-hidden">
                   <div className="bg-inputOuter p-[1px] rounded-sm">
-                    <Tooltip title="This shows balance of your wallet, a pool of money that you can use to recharge and deposit.">
+                    <Tooltip title="This shows balance of your wallet, a pool of funds that you can use to recharge and deposit.">
                       <div className="flex flex-col items-start flex-1 px-[17px] py-[15px] rounded-sm bg-pp bg-cover backdrop-blur h-full">
-                        <span className="font-medium text-[11px] lg:text-[14px] leading-[13.75px] lg:leading-[17.5px]">Summary Balance</span>
+                        <span className="font-medium text-[11px] lg:text-[14px] leading-[13.75px] lg:leading-[17.5px]">Wallet Balance</span>
                         <span className="flex items-center font-medium text-[22px] lg:text-[23.26px] leading-[27.5px] lg:leading-[29.08px] mt-[7.74px]">
                           {account ? (balance / Math.pow(10, 18)).toFixed(2) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.700' }} />}
                           <span className="ml-2">CLO</span>
@@ -484,93 +456,7 @@ const Dashboard = () => {
                       </div>
                     </Tooltip>
                   </div>
-                  {/* <div className="flex flex-col 1xl:flex-row gap-[15px]">
-                  <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden flex-1">
-                    <div className="flex flex-col items-start bg-pad rounded-sm px-4 py-[13px]">
-                      <span className="font-medium text-[11px] lg:text-[14px] leading-[13.75px] lg:leading-[17.5px]">Investation</span>
-                      <div className="flex flex-col mt-5 space-y-[15.71px] w-full">
-                        <div className="flex justify-between items-center space-x-[16.71px]">
-                          <div className="flex items-center space-x-[16.71px]">
-                            <div className="flex justify-center items-center bg-grey7 rounded-full w-8 lg:w-[40.29px] h-8 lg:h-[40.29px]">
-                              <img className="w-4 lg:w-[22.52px]" src="images/clo/1.png" alt="" />
-                            </div>
-                            <div className="flex flex-col items-start space-y-[3px]">
-                              <span className="font-medium text-[11.26px] lg:text-[18px] leading-[14.08px] lg:leading-[22.5px]">240.000</span>
-                              <span className="font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey6">CLO</span>
-                            </div>
-                          </div>
-                          <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1.5459 1.66833L7.5459 7.66833L1.5459 13.6683" stroke="#9E9E9E" strokeWidth="1.5" strokeLinecap="round" />
-                          </svg>
-                        </div>
-                        <div className="flex justify-between items-center space-x-[16.71px]">
-                          <div className="flex items-center space-x-[16.71px]">
-                            <div className="flex justify-center items-center bg-grey7 rounded-full w-8 lg:w-[40.29px] h-8 lg:h-[40.29px]">
-                              <img className="w-4 lg:w-[25px]" src="images/clo/2.png" alt="" />
-                            </div>
-                            <div className="flex flex-col items-start space-y-[3px]">
-                              <span className="font-medium text-[11.26px] lg:text-[18px] leading-[14.08px] lg:leading-[22.5px]">64.000</span>
-                              <span className="font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey6">CLOE</span>
-                            </div>
-                          </div>
-                          <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1.5459 1.66833L7.5459 7.66833L1.5459 13.6683" stroke="#9E9E9E" strokeWidth="1.5" strokeLinecap="round" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden flex-1">
-                    <div className="flex flex-col items-start bg-pad rounded-sm px-4 py-[13px]">
-                      <span className="font-medium text-[11px] lg:text-[14px] leading-[13.75px] lg:leading-[17.5px]">Last round reward</span>
-                      <div className="flex flex-col mt-5 space-y-[15.71px] w-full">
-                        <div className="flex justify-between items-center space-x-[16.71px]">
-                          <div className="flex items-center space-x-[16.71px]">
-                            <div className="flex justify-center items-center bg-grey7 rounded-full w-8 lg:w-[40.29px] h-8 lg:h-[40.29px]">
-                              <img className="w-4 lg:w-[22.52px]" src="images/clo/1.png" alt="" />
-                            </div>
-                            <div className="flex flex-col items-start space-y-[3px]">
-                              <span className="font-medium text-[11.26px] lg:text-[18px] leading-[14.08px] lg:leading-[22.5px]">125.000</span>
-                              <span className="font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey6">CLO</span>
-                            </div>
-                          </div>
-                          <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1.5459 1.66833L7.5459 7.66833L1.5459 13.6683" stroke="#9E9E9E" strokeWidth="1.5" strokeLinecap="round" />
-                          </svg>
-                        </div>
-                        <div className="flex justify-between items-center space-x-[16.71px]">
-                          <div className="flex items-center space-x-[16.71px]">
-                            <div className="flex justify-center items-center bg-grey7 rounded-full w-8 lg:w-[40.29px] h-8 lg:h-[40.29px]">
-                              <img className="w-4 lg:w-[25px]" src="images/clo/2.png" alt="" />
-                            </div>
-                            <div className="flex flex-col items-start space-y-[3px]">
-                              <span className="font-medium text-[11.26px] lg:text-[18px] leading-[14.08px] lg:leading-[22.5px]">1.000</span>
-                              <span className="font-light text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey6">CLOE</span>
-                            </div>
-                          </div>
-                          <svg width="9" height="15" viewBox="0 0 9 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M1.5459 1.66833L7.5459 7.66833L1.5459 13.6683" stroke="#9E9E9E" strokeWidth="1.5" strokeLinecap="round" />
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div> */}
                 </div>
-                {/* <div className="w-full flex flex-col items-start bg-[#202020] rounded-sm pt-[18.52px] pb-[17.31px] pl-[19.16px] pr-[30.13px] mt-[25.1px]">
-                <div className="flex justify-between items-center w-full mb-6">
-                  <span className="font-light text-[12px] leading-[15px] text-white">Money Earned From</span>
-                  <div className="flex items-center space-x-[11.5px]">
-                    <span className="font-light text-[12px] leading-[15px] text-white">1 Years</span>
-                    <div className="flex justify-center items-center bg-black2 rounded-[8.01727px] w-[28.06px] h-[16.03px]">
-                      <svg width="8" height="5" viewBox="0 0 8 5" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M7.03296 0.653442H0.686035L3.65072 4.03569L7.03296 0.653442Z" fill="white"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <LineChart chartData={data} />
-              </div> */}
               </div>
             </div>
             {(status === 1 || status === 2 || status === 3) &&
