@@ -57,8 +57,6 @@ export const toast = (text) => {
         position: "right", // `left`, `center` or `right`
         stopOnFocus: true, // Prevents dismissing of toast on hover
         style: {
-            background: "#524EEE",
-            boxShadow: "none",
             display: "flex",
             alignItems: "center",
             gap: "32px"

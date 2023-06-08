@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useWeb3React } from '@web3-react/core'
 import { Contract, Provider, setMulticallAddress } from "ethers-multicall";
 import { useNavigate } from "react-router-dom";
-import { Tooltip } from "@mui/material";
+import { Skeleton, Tooltip } from "@mui/material";
 import { ethers } from "ethers";
 import useAuth from "../hooks/useAuth";
 import Footer from "../layouts/Footer";
@@ -42,7 +42,7 @@ const Dashboard = () => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       await (await lotteryContract.connect(provider.getSigner()).start_new_round({ value: minAllowedBet })).wait()
-      toast("Round started")
+      toast("Round is started")
     } catch (e) {
       console.log(e)
     }
@@ -64,7 +64,7 @@ const Dashboard = () => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       setEntropyHash(await entropyContract.connect(provider.getSigner()).test_hash(payload, salt))
-      toast("Provided entropy")
+      toast("Entropy is provided")
     } catch (e) {
       console.log(e)
     }
@@ -76,7 +76,7 @@ const Dashboard = () => {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       await (await entropyContract.connect(provider.getSigner()).submit_entropy(entropyHash, { value: enAmount })).wait()
       setEntropyHash("")
-      toast("Submitted entropy")
+      toast("Entropy is submitted")
     } catch (e) {
       console.log(e)
     }
@@ -88,7 +88,7 @@ const Dashboard = () => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       await (await entropyContract.connect(provider.getSigner()).reveal_entropy(payloadForReveal, saltForReveal)).wait()
-      toast("Revealed entropy")
+      toast("Entropy is revealed")
     } catch (e) {
       console.log(e)
     }
@@ -99,7 +99,7 @@ const Dashboard = () => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       await (await lotteryContract.connect(provider.getSigner()).finish_round(account)).wait()
-      toast("Finished round")
+      toast("Round is finished")
     } catch (e) {
       console.log(e)
     }
@@ -302,7 +302,13 @@ const Dashboard = () => {
                 <div className="flex flex-col flex-1 px-[19px] py-[9px] sm:pt-[21.58px] sm:px-[33.4px] sm:pb-[16.84px]">
                   <span className="font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]">{ROUTERS.LOTTERY.address}</span>
                   <span className="mt-[2.92px] sm:mt-[5.6px] font-light text-[8px] sm:text-[11px] leading-[8px] sm:leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
-                  <span className="mt-3 sm:mt-[21.91px] font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]">Round {roundId}</span>
+                  {loaded ?
+                    <span className="mt-3 sm:mt-[21.91px] font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]">Round {roundId}</span>
+                    :
+                    <div className="mt-3 sm:mt-[21.91px]">
+                      <Skeleton variant="text" width={100} sx={{ bgcolor: 'grey.800' }} />
+                    </div>
+                  }
                   {(status === 1 || status === 2) &&
                     <Tooltip title="How long does it take for next state">
                       <div className="flex items-center space-x-[14px] sm:space-x-9 mt-2">
@@ -328,7 +334,7 @@ const Dashboard = () => {
                       </div>
                     </Tooltip>
                   }
-                  {status >= 0 &&
+                  {status >= 0 ?
                     <span className="mt-3 font-light text-[11px] sm:text-[14px] tracking-[-0.02em] text-green1">
                       Status:
                       {status === 0 && " The round is finished and reward is already paid and we can start a new round"}
@@ -336,6 +342,10 @@ const Dashboard = () => {
                       {status === 2 && " The round is ongoing (and its Reveal phase)"}
                       {status === 3 && " The round is finished and reward must be paid"}
                     </span>
+                    :
+                    <div className="mt-3">
+                      <Skeleton variant="text" sx={{ bgcolor: 'grey.800' }} />
+                    </div>
                   }
                   {loaded && account &&
                     <div className="flex justify-end items-center space-x-3 mt-[19.3px] font-light text-[8px] sm:text-[12px] leading-[8px] sm:leading-[15px] tracking-[0.02em]">
@@ -405,8 +415,8 @@ const Dashboard = () => {
                   <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                     <div className="flex flex-col justify-between items-center bg-poolInner rounded-sm pt-5 sm:pt-[24.05px] pb-3 sm:pb-[28.03px] px-[22px] sm:px-[50px] h-full">
                       <img className="w-[27.24px] h-[27.24px] sm:w-auto sm:h-auto" src="images/dollar.svg" alt="" />
-                      <span className="font-medium text-[20.26px] sm:text-[28.26px] leading-[25.32px] sm:leading-[35.32px] whitespace-nowrap">{total ? total.toString() / Math.pow(10, 18) : "?"}</span>
-                      <span className="font-light text-[8.22px] sm:text-[13px] leading-[7.78px] sm:leading-[14px] tracking-[-0.02em] text-center whitespace-nowrap">Round Reward Pool</span>
+                      <span className="mt-2 font-medium text-[20.26px] sm:text-[28.26px] leading-[25.32px] sm:leading-[35.32px] whitespace-nowrap">{total ? total.toString() / Math.pow(10, 18) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.800' }} />}</span>
+                      <span className="mt-2 font-light text-[8.22px] sm:text-[13px] leading-[7.78px] sm:leading-[14px] tracking-[-0.02em] text-center whitespace-nowrap">Round Reward Pool</span>
                     </div>
                   </div>
                 </Tooltip>
@@ -467,7 +477,10 @@ const Dashboard = () => {
                     <Tooltip title="This shows balance of your wallet, a pool of money that you can use to recharge and deposit.">
                       <div className="flex flex-col items-start flex-1 px-[17px] py-[15px] rounded-sm bg-pp bg-cover backdrop-blur h-full">
                         <span className="font-medium text-[11px] lg:text-[14px] leading-[13.75px] lg:leading-[17.5px]">Summary Balance</span>
-                        <span className="font-medium text-[22px] lg:text-[23.26px] leading-[27.5px] lg:leading-[29.08px] mt-[7.74px]">{(balance / Math.pow(10, 18)).toFixed(2)} CLO</span>
+                        <span className="flex items-center font-medium text-[22px] lg:text-[23.26px] leading-[27.5px] lg:leading-[29.08px] mt-[7.74px]">
+                          {account ? (balance / Math.pow(10, 18)).toFixed(2) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.700' }} />}
+                          <span className="ml-2">CLO</span>
+                        </span>
                       </div>
                     </Tooltip>
                   </div>
