@@ -357,7 +357,7 @@ const Dashboard = () => {
                                 <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} type="number" />
                               </div>
                             </div>
-                            <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleSubmitEntropy} disabled={doing || entropyHash === ""}>Submit Entropy</button>
+                            <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleSubmitEntropy} disabled={doing}>Submit Entropy</button>
                           </div>
                           <span className="mt-2 font-light text-[12.61px] leading-[15.76px] text-red1">Remember payload, salt value for entropy!</span>
                         </div>
