@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useWeb3React } from '@web3-react/core'
 import { Contract, Provider, setMulticallAddress } from "ethers-multicall";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +32,8 @@ const Dashboard = () => {
   const nav = useNavigate()
   const lotteryContract = useLottery(), entropyContract = useEntropy()
   const { logout } = useAuth(), { account } = useWeb3React();
+  let timerId1 = useRef()
+  let timerId2 = useRef()
   const handleDisconnect = async () => {
     await logout();
     document.location.href = "/connect"
@@ -103,6 +105,7 @@ const Dashboard = () => {
     if (dys1 === 0 && hrs1 === 0 && mins1 === 0 && secs1 === 0) {
       if (status > 0) {
         setDoing(true);
+        clearInterval(timerId1.current);
         await getData();
         setDoing(false);
       }
@@ -120,6 +123,7 @@ const Dashboard = () => {
     if (dys2 === 0 && hrs2 === 0 && mins2 === 0 && secs2 === 0) {
       if (status > 0) {
         setDoing(true);
+        clearInterval(timerId2.current);
         await getData();
         setDoing(false);
       }
@@ -202,15 +206,15 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (status === 1) {
-      const timerId = setInterval(() => tick1(), 1000)
-      return () => clearInterval(timerId);
+      timerId1.current = setInterval(() => tick1(), 1000)
+      return () => clearInterval(timerId1.current);
     }
   })
 
   useEffect(() => {
     if (status === 2) {
-      const timerId = setInterval(() => tick2(), 1000)
-      return () => clearInterval(timerId);
+      timerId2.current = setInterval(() => tick2(), 1000)
+      return () => clearInterval(timerId2.current);
     }
   })
 
@@ -257,7 +261,7 @@ const Dashboard = () => {
       const d1 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6])) * 1000)
       const d2 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6]) + parseInt(multiResult[7])) * 1000)
       if (multiResult[2] === 0) {
-        setTime1([0, 1, 0, 0])
+        setTime1([0, 1, 2, 30])
         setTime2([0, 1, 0, 0])
       }
       if (multiResult[2] === 1) {
@@ -265,7 +269,7 @@ const Dashboard = () => {
         setTime2([0, 1, 0, 0])
       }
       if (multiResult[2] === 2) {
-        setTime1([0, 1, 0, 0])
+        setTime1([0, 1, 2, 30])
         setTime2([secondsToDhms(new Date(), d2).dDisplay, secondsToDhms(new Date(), d2).hDisplay, secondsToDhms(new Date(), d2).mDisplay, secondsToDhms(new Date(), d2).sDisplay])
       }
       if (multiResult[2] === 3) {
