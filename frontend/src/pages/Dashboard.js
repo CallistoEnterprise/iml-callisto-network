@@ -276,7 +276,7 @@ const Dashboard = () => {
       setLoaded(true)
     }
     init()
-  }, [])
+  }, [lotteryContract])
 
   return (
     <div className="flex h-screen">
@@ -402,7 +402,7 @@ const Dashboard = () => {
                   }
                   <div className="flex flex-col items-start space-y-4">
                     <Tooltip title="The round is finished and reward is already paid and we can start a new round">
-                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 0 ? " opacity-20" : "")}>
+                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 0 ? " opacity-10" : "")}>
                         <div className="flex flex-col items-center">
                           <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
                           <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
@@ -425,7 +425,7 @@ const Dashboard = () => {
                       </div>
                     </Tooltip>
                     <Tooltip title="The round is ongoing (and it is in Deposit phase)">
-                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 1 ? " opacity-20" : "")}>
+                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 1 ? " opacity-10" : "")}>
                         <div className="flex flex-col items-center">
                           <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys1}</span>
                           <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
@@ -448,7 +448,7 @@ const Dashboard = () => {
                       </div>
                     </Tooltip>
                     <Tooltip title="The round is ongoing (and its Reveal phase)">
-                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 2 ? " opacity-20" : "")}>
+                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 2 ? " opacity-10" : "")}>
                         <div className="flex flex-col items-center">
                           <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys2}</span>
                           <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
@@ -471,7 +471,7 @@ const Dashboard = () => {
                       </div>
                     </Tooltip>
                     <Tooltip title="The round is finished and reward must be paid">
-                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 3 ? " opacity-20" : "")}>
+                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 3 ? " opacity-10" : "")}>
                         <div className="flex flex-col items-center">
                           <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
                           <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
