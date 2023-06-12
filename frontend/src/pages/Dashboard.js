@@ -176,7 +176,7 @@ const Dashboard = () => {
     ])
     setDepositData(sumPercent(_depositDataWithPercent))
     setLoaded(true)
-  }, [lotteryContract])
+  }, [])
 
   useMemo(async () => {
     if (account && doing === false) {
@@ -189,7 +189,7 @@ const Dashboard = () => {
     return () => clearInterval(timerId);
   })
 
-  useMemo(async () => { getData() }, [])
+  useMemo(async () => { getData() }, [ getData ])
 
   return (
     <div className="flex h-screen">
