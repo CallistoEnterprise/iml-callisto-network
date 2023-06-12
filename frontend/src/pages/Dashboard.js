@@ -126,7 +126,7 @@ const Dashboard = () => {
       setTime2([dys2, hrs2, mins2, secs2 - 1]);
     }
   }
-  const getData = async () => {
+  const getData = useCallback(async () => {
     console.log("Getting lottery data")
     const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
     const ethcallProvider = new Provider(provider);
@@ -176,7 +176,7 @@ const Dashboard = () => {
     ])
     setDepositData(sumPercent(_depositDataWithPercent))
     setLoaded(true)
-  }
+  })
 
   useMemo(async () => {
     if (account && doing === false) {
