@@ -187,7 +187,7 @@ const Dashboard = () => {
       setTime2([0, 1, 0, 0])
     }
     if (multiResult[2] === 2) {
-      setTime1([0, 1, 2, 30])
+      setTime1([0, 0, 0, 0])
       setTime2([secondsToDhms(new Date(), d2).dDisplay, secondsToDhms(new Date(), d2).hDisplay, secondsToDhms(new Date(), d2).mDisplay, secondsToDhms(new Date(), d2).sDisplay])
     }
     if (multiResult[2] === 3) {
@@ -269,7 +269,7 @@ const Dashboard = () => {
         setTime2([0, 1, 0, 0])
       }
       if (multiResult[2] === 2) {
-        setTime1([0, 1, 2, 30])
+        setTime1([0, 0, 0, 0])
         setTime2([secondsToDhms(new Date(), d2).dDisplay, secondsToDhms(new Date(), d2).hDisplay, secondsToDhms(new Date(), d2).mDisplay, secondsToDhms(new Date(), d2).sDisplay])
       }
       if (multiResult[2] === 3) {
