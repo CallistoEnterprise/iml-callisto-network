@@ -99,10 +99,13 @@ const Dashboard = () => {
     }
     setDoing(false)
   }
-  const tick1 = () => {
+  const tick1 = async () => {
     if (dys1 === 0 && hrs1 === 0 && mins1 === 0 && secs1 === 0) {
-      if (status > 0) getData();
-      setInterval(() => tick2(), 1000)
+      if (status > 0) {
+        setDoing(true);
+        await getData();
+        setDoing(false);
+      }
     } else if (hrs1 === 0 && mins1 === 0 && secs1 === 0) {
       setTime1([dys1 - 1, 23, 59, 59]);
     } else if (mins1 === 0 && secs1 === 0) {
@@ -113,9 +116,13 @@ const Dashboard = () => {
       setTime1([dys1, hrs1, mins1, secs1 - 1]);
     }
   }
-  const tick2 = () => {
+  const tick2 = async () => {
     if (dys2 === 0 && hrs2 === 0 && mins2 === 0 && secs2 === 0) {
-      if (status > 0) getData();
+      if (status > 0) {
+        setDoing(true);
+        await getData();
+        setDoing(false);
+      }
     } else if (hrs2 === 0 && mins2 === 0 && secs2 === 0) {
       setTime2([dys2 - 1, 23, 59, 59]);
     } else if (mins2 === 0 && secs2 === 0) {
@@ -167,13 +174,14 @@ const Dashboard = () => {
     setRoundRewardPaid(multiResult[4])
     const d1 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6])) * 1000)
     const d2 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6]) + parseInt(multiResult[7])) * 1000)
-    setTime1([secondsToDhms(new Date(), d1).dDisplay, secondsToDhms(new Date(), d1).hDisplay, secondsToDhms(new Date(), d1).mDisplay, secondsToDhms(new Date(), d1).sDisplay])
-    setTime2([
-      secondsToDhms(new Date(), d2).dDisplay - secondsToDhms(new Date(), d1).dDisplay,
-      secondsToDhms(new Date(), d2).hDisplay - secondsToDhms(new Date(), d1).hDisplay,
-      secondsToDhms(new Date(), d2).mDisplay - secondsToDhms(new Date(), d1).mDisplay,
-      secondsToDhms(new Date(), d2).sDisplay - secondsToDhms(new Date(), d1).sDisplay,
-    ])
+    if (multiResult[2] === 1) {
+      setTime1([secondsToDhms(new Date(), d1).dDisplay, secondsToDhms(new Date(), d1).hDisplay, secondsToDhms(new Date(), d1).mDisplay, secondsToDhms(new Date(), d1).sDisplay])
+      setTime2([0, 1, 0, 0])
+    }
+    if (multiResult[2] === 2) {
+      setTime1([0, 1, 0, 0])
+      setTime2([secondsToDhms(new Date(), d2).dDisplay, secondsToDhms(new Date(), d2).hDisplay, secondsToDhms(new Date(), d2).mDisplay, secondsToDhms(new Date(), d2).sDisplay])
+    }
     setDepositData(sumPercent(_depositDataWithPercent))
     setLoaded(true)
   }, [])
@@ -185,11 +193,20 @@ const Dashboard = () => {
   }, [account, doing])
 
   useEffect(() => {
-    const timerId = setInterval(() => tick1(), 1000)
-    return () => clearInterval(timerId);
+    if (status === 1) {
+      const timerId = setInterval(() => tick1(), 1000)
+      return () => clearInterval(timerId);
+    }
   })
 
-  useMemo(async () => { getData() }, [ getData ])
+  useEffect(() => {
+    if (status === 2) {
+      const timerId = setInterval(() => tick2(), 1000)
+      return () => clearInterval(timerId);
+    }
+  })
+
+  useMemo(async () => { getData() }, [getData])
 
   return (
     <div className="flex h-screen">
@@ -314,7 +331,7 @@ const Dashboard = () => {
                     </div>
                   }
                   <div className="flex flex-col items-start space-y-4">
-                    <Tooltip title="How long does it take for next state">
+                    <Tooltip title="The round is finished and reward is already paid and we can start a new round">
                       <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 0 ? " opacity-20" : "")}>
                         <div className="flex flex-col items-center">
                           <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
@@ -337,7 +354,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </Tooltip>
-                    <Tooltip title="How long does it take for next state">
+                    <Tooltip title="The round is ongoing (and it is in Deposit phase)">
                       <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 1 ? " opacity-20" : "")}>
                         <div className="flex flex-col items-center">
                           <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys1}</span>
@@ -360,7 +377,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </Tooltip>
-                    <Tooltip title="How long does it take for next state">
+                    <Tooltip title="The round is ongoing (and its Reveal phase)">
                       <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 2 ? " opacity-20" : "")}>
                         <div className="flex flex-col items-center">
                           <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys2}</span>
@@ -383,7 +400,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </Tooltip>
-                    <Tooltip title="How long does it take for next state">
+                    <Tooltip title="The round is finished and reward must be paid">
                       <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 3 ? " opacity-20" : "")}>
                         <div className="flex flex-col items-center">
                           <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
