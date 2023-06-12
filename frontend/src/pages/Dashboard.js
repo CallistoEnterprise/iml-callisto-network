@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useWeb3React } from '@web3-react/core'
 import { Contract, Provider, setMulticallAddress } from "ethers-multicall";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,7 @@ import { copy, secondsToDhms, sumPercent, toast } from "../utils/msTime";
 const Dashboard = () => {
   const [total, setTotal] = useState()
   const [copiedCode, setCopiedCode] = useState(false);
-  const [payload, setPayload] = useState("0")
+  const [payload, setPayload] = useState(Math.floor(Math.random() * 90000000000).toString())
   const [payloadForReveal, setPayloadForReveal] = useState(Math.floor(Math.random() * 90000000000).toString())
   const [doing, setDoing] = useState(false)
   const [loaded, setLoaded] = useState(false)
@@ -26,7 +26,8 @@ const Dashboard = () => {
   const [salt, setSalt] = useState(Math.floor(Math.random() * 90000000000).toString())
   const [saltForReveal, setSaltForReveal] = useState(Math.floor(Math.random() * 90000000000).toString())
   const [amount, setAmount] = useState()
-  const [[dys, hrs, mins, secs], setTime] = useState([0, 0, 0, 0])
+  const [[dys1, hrs1, mins1, secs1], setTime1] = useState([0, 0, 0, 0])
+  const [[dys2, hrs2, mins2, secs2], setTime2] = useState([0, 0, 0, 0])
 
   const nav = useNavigate()
   const lotteryContract = useLottery(), entropyContract = useEntropy()
@@ -40,6 +41,7 @@ const Dashboard = () => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       await (await lotteryContract.connect(provider.getSigner()).start_new_round({ value: minAllowedBet })).wait()
+      await getData()
       toast("Round is started")
     } catch (e) {
       console.log(e)
@@ -51,6 +53,7 @@ const Dashboard = () => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       await (await lotteryContract.connect(provider.getSigner()).deposit({ value: minAllowedBet })).wait()
+      await getData()
       toast("Deposited 10 CLO")
     } catch (e) {
       console.log(e)
@@ -63,6 +66,7 @@ const Dashboard = () => {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const entropyHash = await entropyContract.connect(provider.getSigner()).test_hash(payload, salt)
       await (await entropyContract.connect(provider.getSigner()).submit_entropy(entropyHash, { value: amount })).wait()
+      await getData()
       toast("Entropy is submitted")
     } catch (e) {
       console.log(e)
@@ -76,6 +80,7 @@ const Dashboard = () => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       await (await entropyContract.connect(provider.getSigner()).reveal_entropy(payloadForReveal, saltForReveal)).wait()
+      await getData()
       toast("Entropy is revealed")
     } catch (e) {
       console.log(e)
@@ -87,73 +92,91 @@ const Dashboard = () => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       await (await lotteryContract.connect(provider.getSigner()).finish_round(account)).wait()
+      await getData()
       toast("Round is finished")
     } catch (e) {
       console.log(e)
     }
     setDoing(false)
   }
-  const tick = () => {
-    if (dys === 0 && hrs === 0 && mins === 0 && secs === 0) {
-    } else if (hrs === 0 && mins === 0 && secs === 0) {
-      setTime([dys - 1, 23, 59, 59]);
-    } else if (mins === 0 && secs === 0) {
-      setTime([dys, hrs - 1, 59, 59]);
-    } else if (secs === 0) {
-      setTime([dys, hrs, mins - 1, 59]);
+  const tick1 = () => {
+    if (dys1 === 0 && hrs1 === 0 && mins1 === 0 && secs1 === 0) {
+      if (status > 0) getData();
+      setInterval(() => tick2(), 1000)
+    } else if (hrs1 === 0 && mins1 === 0 && secs1 === 0) {
+      setTime1([dys1 - 1, 23, 59, 59]);
+    } else if (mins1 === 0 && secs1 === 0) {
+      setTime1([dys1, hrs1 - 1, 59, 59]);
+    } else if (secs1 === 0) {
+      setTime1([dys1, hrs1, mins1 - 1, 59]);
     } else {
-      setTime([dys, hrs, mins, secs - 1]);
+      setTime1([dys1, hrs1, mins1, secs1 - 1]);
     }
   }
-  useMemo(async () => {
-    if (doing === false) {
-      const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
-      const ethcallProvider = new Provider(provider);
-      const _total = await provider.getBalance(ROUTERS.LOTTERY.address)
-      setMulticallAddress(820, "0x914D4b9Bb542077BeA48DE5E3D6CF42e7ADfa1aa");
-      await ethcallProvider.init();
-      const _lotteryContract = new Contract(ROUTERS.LOTTERY_MULTICALL.address, ROUTERS.LOTTERY_MULTICALL.abi);
-      const _tmp = await ethcallProvider.all([
-        _lotteryContract.min_allowed_bet(),
-        _lotteryContract.current_round(),
-        _lotteryContract.get_phase(),
-        _lotteryContract.current_round(),
-        _lotteryContract.round_reward_paid(),
-        _lotteryContract.round_start_timestamp(),
-        _lotteryContract.deposits_phase_duration(),
-        _lotteryContract.entropy_phase_duration(),
-      ]);
-      const multiResult = (_tmp.map(x => x._isBigNumber ? x.toString() : x))
-      const roundStartData = await lotteryContract.queryFilter(lotteryContract.filters.NewRound(multiResult[1]));
-      const data = await lotteryContract.queryFilter(lotteryContract.filters.Deposit());
-      const _depositData = data.filter(x => x.blockNumber >= roundStartData[0].blockNumber).map(x => {
-        const tmp = x.decode(x.data, x.topics)
-        return {
-          amount_credited: ethers.utils.formatEther(tmp["amount_credited"]),
-          amount_deposited: ethers.utils.formatEther(tmp["amount_deposited"]),
-          depositor: tmp["depositor"],
-        }
-      })
-      let sum = 0; _depositData.forEach(x => sum += parseFloat(x.amount_deposited));
-      const _depositDataWithPercent = _depositData.map(x => {
-        return { ...x, amount_deposited: parseFloat(x.amount_deposited), percent: x.amount_deposited / sum * 100 }
-      })
-      setTotal(_total)
-      setMinAllowedBet(multiResult[0])
-      setRoundId(multiResult[1])
-      setStatus(multiResult[2])
-      setCurrentRound(multiResult[3])
-      setRoundRewardPaid(multiResult[4])
-      const d1 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6])) * 1000)
-      const d2 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6]) + parseInt(multiResult[7])) * 1000)
-      let deadline = new Date();
-      if (multiResult[2] === 1) deadline = d1
-      if (multiResult[2] === 2) deadline = d2
-      setTime([secondsToDhms(new Date(), deadline).dDisplay, secondsToDhms(new Date(), deadline).hDisplay, secondsToDhms(new Date(), deadline).mDisplay, secondsToDhms(new Date(), deadline).sDisplay])
-      setDepositData(sumPercent(_depositDataWithPercent))
-      setLoaded(true)
+  const tick2 = () => {
+    if (dys2 === 0 && hrs2 === 0 && mins2 === 0 && secs2 === 0) {
+      if (status > 0) getData();
+    } else if (hrs2 === 0 && mins2 === 0 && secs2 === 0) {
+      setTime2([dys2 - 1, 23, 59, 59]);
+    } else if (mins2 === 0 && secs2 === 0) {
+      setTime2([dys2, hrs2 - 1, 59, 59]);
+    } else if (secs2 === 0) {
+      setTime2([dys2, hrs2, mins2 - 1, 59]);
+    } else {
+      setTime2([dys2, hrs2, mins2, secs2 - 1]);
     }
-  }, [doing, lotteryContract]);
+  }
+  const getData = async () => {
+    console.log("Getting lottery data")
+    const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
+    const ethcallProvider = new Provider(provider);
+    const _total = await provider.getBalance(ROUTERS.LOTTERY.address)
+    setMulticallAddress(820, "0x914D4b9Bb542077BeA48DE5E3D6CF42e7ADfa1aa");
+    await ethcallProvider.init();
+    const _lotteryContract = new Contract(ROUTERS.LOTTERY_MULTICALL.address, ROUTERS.LOTTERY_MULTICALL.abi);
+    const _tmp = await ethcallProvider.all([
+      _lotteryContract.min_allowed_bet(),
+      _lotteryContract.current_round(),
+      _lotteryContract.get_phase(),
+      _lotteryContract.current_round(),
+      _lotteryContract.round_reward_paid(),
+      _lotteryContract.round_start_timestamp(),
+      _lotteryContract.deposits_phase_duration(),
+      _lotteryContract.entropy_phase_duration(),
+    ]);
+    const multiResult = (_tmp.map(x => x._isBigNumber ? x.toString() : x))
+    const roundStartData = await lotteryContract.queryFilter(lotteryContract.filters.NewRound(multiResult[1]));
+    const data = await lotteryContract.queryFilter(lotteryContract.filters.Deposit());
+    const _depositData = data.filter(x => x.blockNumber >= roundStartData[0].blockNumber).map(x => {
+      const tmp = x.decode(x.data, x.topics)
+      return {
+        amount_credited: ethers.utils.formatEther(tmp["amount_credited"]),
+        amount_deposited: ethers.utils.formatEther(tmp["amount_deposited"]),
+        depositor: tmp["depositor"],
+      }
+    })
+    let sum = 0; _depositData.forEach(x => sum += parseFloat(x.amount_deposited));
+    const _depositDataWithPercent = _depositData.map(x => {
+      return { ...x, amount_deposited: parseFloat(x.amount_deposited), percent: x.amount_deposited / sum * 100 }
+    })
+    setTotal(_total)
+    setMinAllowedBet(multiResult[0])
+    setRoundId(multiResult[1])
+    setStatus(multiResult[2])
+    setCurrentRound(multiResult[3])
+    setRoundRewardPaid(multiResult[4])
+    const d1 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6])) * 1000)
+    const d2 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6]) + parseInt(multiResult[7])) * 1000)
+    setTime1([secondsToDhms(new Date(), d1).dDisplay, secondsToDhms(new Date(), d1).hDisplay, secondsToDhms(new Date(), d1).mDisplay, secondsToDhms(new Date(), d1).sDisplay])
+    setTime2([
+      secondsToDhms(new Date(), d2).dDisplay - secondsToDhms(new Date(), d1).dDisplay,
+      secondsToDhms(new Date(), d2).hDisplay - secondsToDhms(new Date(), d1).hDisplay,
+      secondsToDhms(new Date(), d2).mDisplay - secondsToDhms(new Date(), d1).mDisplay,
+      secondsToDhms(new Date(), d2).sDisplay - secondsToDhms(new Date(), d1).sDisplay,
+    ])
+    setDepositData(sumPercent(_depositDataWithPercent))
+    setLoaded(true)
+  }
 
   useMemo(async () => {
     if (account && doing === false) {
@@ -162,11 +185,11 @@ const Dashboard = () => {
   }, [account, doing])
 
   useEffect(() => {
-    if (loaded) {
-      const timerId = setInterval(() => tick(), 1000)
-      return () => clearInterval(timerId);
-    }
+    const timerId = setInterval(() => tick1(), 1000)
+    return () => clearInterval(timerId);
   })
+
+  useMemo(async () => { getData() }, [])
 
   return (
     <div className="flex h-screen">
@@ -290,31 +313,100 @@ const Dashboard = () => {
                       <Skeleton variant="text" width={100} sx={{ bgcolor: 'grey.800' }} />
                     </div>
                   }
-                  {(status === 1 || status === 2) &&
+                  <div className="flex flex-col items-start space-y-4">
                     <Tooltip title="How long does it take for next state">
-                      <div className="flex items-center space-x-[14px] sm:space-x-9 mt-2">
+                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 0 ? " opacity-20" : "")}>
                         <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys}</span>
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
                           <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
                         </div>
                         <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
                         <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{hrs}</span>
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
                           <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
                         </div>
                         <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
                         <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{mins}</span>
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
                           <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
                         </div>
                         <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
                         <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{secs}</span>
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
                           <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
                         </div>
                       </div>
                     </Tooltip>
-                  }
+                    <Tooltip title="How long does it take for next state">
+                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 1 ? " opacity-20" : "")}>
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys1}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
+                        </div>
+                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{hrs1}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
+                        </div>
+                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{mins1}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
+                        </div>
+                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{secs1}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
+                        </div>
+                      </div>
+                    </Tooltip>
+                    <Tooltip title="How long does it take for next state">
+                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 2 ? " opacity-20" : "")}>
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys2}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
+                        </div>
+                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{hrs2}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
+                        </div>
+                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{mins2}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
+                        </div>
+                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{secs2}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
+                        </div>
+                      </div>
+                    </Tooltip>
+                    <Tooltip title="How long does it take for next state">
+                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 3 ? " opacity-20" : "")}>
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
+                        </div>
+                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
+                        </div>
+                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
+                        </div>
+                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                        <div className="flex flex-col items-center">
+                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
+                        </div>
+                      </div>
+                    </Tooltip>
+                  </div>
                   {status >= 0 ?
                     <span className="mt-3 font-light text-[11px] sm:text-[14px] tracking-[-0.02em] text-green1">
                       Status:
@@ -339,12 +431,12 @@ const Dashboard = () => {
                           <span className="mt-5 font-light text-[12.61px] leading-[15.76px] text-white">Become Entropy Provider</span>
                           <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                             <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Entropy" type="number" value={payload} onChange={e => setPayload(e.target.value)} />
+                              <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Entropy" type="number" value={payload} onChange={e => setPayload(e.target.value)} />
                             </div>
                           </div>
                           <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                             <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-grey1 placeholder-grey1" placeholder="Salt" type="number" value={salt} onChange={e => setSalt(e.target.value)} />
+                              <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Salt" type="number" value={salt} onChange={e => setSalt(e.target.value)} />
                             </div>
                           </div>
                           <div className="flex justify-end items-center space-x-3 mt-2">
