@@ -176,7 +176,7 @@ const Dashboard = () => {
     ])
     setDepositData(sumPercent(_depositDataWithPercent))
     setLoaded(true)
-  })
+  }, [lotteryContract])
 
   useMemo(async () => {
     if (account && doing === false) {
