@@ -179,7 +179,7 @@ const Dashboard = () => {
     const d1 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6])) * 1000)
     const d2 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6]) + parseInt(multiResult[7])) * 1000)
     if (multiResult[2] === 0) {
-      setTime1([0, 1, 2, 30])
+      setTime1([0, 1, 0, 0])
       setTime2([0, 1, 0, 0])
     }
     if (multiResult[2] === 1) {
@@ -261,7 +261,7 @@ const Dashboard = () => {
       const d1 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6])) * 1000)
       const d2 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6]) + parseInt(multiResult[7])) * 1000)
       if (multiResult[2] === 0) {
-        setTime1([0, 1, 2, 30])
+        setTime1([0, 1, 0, 0])
         setTime2([0, 1, 0, 0])
       }
       if (multiResult[2] === 1) {
