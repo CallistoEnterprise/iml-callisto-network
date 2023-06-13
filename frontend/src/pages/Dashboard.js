@@ -9,6 +9,7 @@ import Footer from "../layouts/Footer";
 import { useEntropy, useLottery } from "../hooks/useContract";
 import { ROUTERS } from "../contracts/config";
 import { copy, secondsToDhms, sumPercent, toast } from "../utils/msTime";
+import { parseEther } from "ethers/lib/utils";
 
 const Dashboard = () => {
   const [total, setTotal] = useState()
@@ -25,7 +26,7 @@ const Dashboard = () => {
   const [, setCurrentRound] = useState()
   const [salt, setSalt] = useState(Math.floor(Math.random() * 90000000000).toString())
   const [saltForReveal, setSaltForReveal] = useState(Math.floor(Math.random() * 90000000000).toString())
-  const [amount, setAmount] = useState()
+  const [amount, setAmount] = useState(1000)
   const [[dys1, hrs1, mins1, secs1], setTime1] = useState([0, 0, 0, 0])
   const [[dys2, hrs2, mins2, secs2], setTime2] = useState([0, 0, 0, 0])
 
@@ -67,7 +68,7 @@ const Dashboard = () => {
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
       const entropyHash = await entropyContract.connect(provider.getSigner()).test_hash(payload, salt)
-      await (await entropyContract.connect(provider.getSigner()).submit_entropy(entropyHash, { value: amount })).wait()
+      await (await entropyContract.connect(provider.getSigner()).submit_entropy(entropyHash, { value: parseEther(amount.toString()).toString() })).wait()
       await getData()
       toast("Entropy is submitted")
     } catch (e) {
