@@ -47,7 +47,7 @@ export const copy = (text) => {
     }
 }
 
-export const toast = (text) => {
+export const toast = (text, type = "info") => {
     Toastify({
         text,
         duration: 7000,
@@ -57,6 +57,7 @@ export const toast = (text) => {
         position: "right", // `left`, `center` or `right`
         stopOnFocus: true, // Prevents dismissing of toast on hover
         style: {
+            background: type === "danger" && "#FE6B6B",
             display: "flex",
             alignItems: "center",
             gap: "32px"

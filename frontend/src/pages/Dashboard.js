@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import DownloadIcon from '@mui/icons-material/Download';
 import { useWeb3React } from '@web3-react/core'
 import { Contract, Provider, setMulticallAddress } from "ethers-multicall";
 import { useNavigate } from "react-router-dom";
@@ -47,7 +48,7 @@ const Dashboard = () => {
       await getData()
       toast("Round is started")
     } catch (e) {
-      console.log(e)
+      toast(e.reason, "danger")
     }
     setDoing(false)
   }
@@ -59,7 +60,7 @@ const Dashboard = () => {
       await getData()
       toast("Deposited 10 CLO")
     } catch (e) {
-      console.log(e)
+      toast(e.reason, "danger")
     }
     setDoing(false)
   }
@@ -72,9 +73,18 @@ const Dashboard = () => {
       await getData()
       toast("Entropy is submitted")
     } catch (e) {
-      console.log(e)
+      toast(e.reason, "danger")
     }
     setDoing(false)
+  }
+  const download = async () => {
+    const fileData = "payload: " + payload + "\nsalt   : " + salt;
+    const blob = new Blob([fileData], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.download = "payload & salt.txt";
+    link.href = url;
+    link.click();
   }
   const handleGenerateSalt = async () => setSalt(Math.floor(Math.random() * 90000000000).toString())
   const handleGenerateEntropy = async () => setPayload(Math.floor(Math.random() * 90000000000).toString())
@@ -86,7 +96,7 @@ const Dashboard = () => {
       await getData()
       toast("Entropy is revealed")
     } catch (e) {
-      console.log(e)
+      toast(e.reason, "danger")
     }
     setDoing(false)
   }
@@ -98,7 +108,7 @@ const Dashboard = () => {
       await getData()
       toast("Round is finished")
     } catch (e) {
-      console.log(e)
+      toast(e.reason, "danger")
     }
     setDoing(false)
   }
@@ -406,101 +416,113 @@ const Dashboard = () => {
                     </div>
                   }
                   <div className="flex flex-col items-start space-y-4">
-                    <Tooltip title="The round is finished and reward is already paid and we can start a new round">
-                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 0 ? " opacity-10" : "")}>
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
+                    <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
+                      <Tooltip title="The lottery is awaiting deposit to start a new round. It will remain in idle state until the next round starts">
+                        <div className="flex items-center space-x-[14px] sm:space-x-9 invisible">
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
+                          </div>
                         </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
+                      </Tooltip>
+                      <span className="text-[16px]">Idle</span>
+                    </div>
+                    <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
+                      <Tooltip title="Users can deposit funds to participate in the lottery. Anyone can become an entropy provider and submit entropy during this phase as well">
+                        <div className={"flex items-center space-x-[14px] sm:space-x-9" + (status !== 1 ? " opacity-10" : "")}>
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys1}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{hrs1}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{mins1}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{secs1}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
+                          </div>
                         </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
+                      </Tooltip>
+                      <span className="text-[16px]">Deposit phase</span>
+                    </div>
+                    <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
+                      <Tooltip title="The lottery is awaiting for entropy to be revealed by entropy providers. Deposits are not accepted.">
+                        <div className={"flex items-center space-x-[14px] sm:space-x-9" + (status !== 2 ? " opacity-10" : "")}>
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys2}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{hrs2}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{mins2}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{secs2}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
+                          </div>
                         </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
+                      </Tooltip>
+                      <span className="text-[16px]">Reveal phase</span>
+                    </div>
+                    <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
+                      <Tooltip title="Winner must be calculated and the reward must be delivered before the next round will start.">
+                        <div className="flex items-center space-x-[14px] sm:space-x-9 invisible">
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
+                          </div>
+                          <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
+                          <div className="flex flex-col items-center">
+                            <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
+                            <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
+                          </div>
                         </div>
-                      </div>
-                    </Tooltip>
-                    <Tooltip title="The round is ongoing (and it is in Deposit phase)">
-                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 1 ? " opacity-10" : "")}>
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys1}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
-                        </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{hrs1}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
-                        </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{mins1}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
-                        </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{secs1}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
-                        </div>
-                      </div>
-                    </Tooltip>
-                    <Tooltip title="The round is ongoing (and its Reveal phase)">
-                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 2 ? " opacity-10" : "")}>
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{dys2}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
-                        </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{hrs2}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
-                        </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{mins2}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
-                        </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{secs2}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
-                        </div>
-                      </div>
-                    </Tooltip>
-                    <Tooltip title="The round is finished and reward must be paid">
-                      <div className={"flex items-center space-x-[14px] sm:space-x-9 mt-2" + (status !== 3 ? " opacity-10" : "")}>
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Days</span>
-                        </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Hours</span>
-                        </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Min</span>
-                        </div>
-                        <div className="w-[1.8611px] h-[34.09px] bg-grey5" />
-                        <div className="flex flex-col items-center">
-                          <span className="font-light text-[19.2px] sm:text-[23.26px] leading-[24px] sm:leading-[29px]">{0}</span>
-                          <span className="font-light text-[9px] sm:text-[10.2361px] leading-[11.25px] sm:leading-[13px] text-grey1">Sec</span>
-                        </div>
-                      </div>
-                    </Tooltip>
+                      </Tooltip>
+                      <span className="text-[16px]">Winner calculation</span>
+                    </div>
                   </div>
                   {status >= 0 ?
-                    <span className="mt-3 font-light text-[11px] sm:text-[14px] tracking-[-0.02em] text-green1">
+                    <span className="mt-3 font-light text-[14px] sm:text-[21px] leading-[100%] tracking-[-0.02em] text-green1">
                       Status:
                       {status === 0 && " The round is finished and reward is already paid and we can start a new round"}
                       {status === 1 && " The round is ongoing (and it is in Deposit phase)"}
@@ -516,35 +538,40 @@ const Dashboard = () => {
                     <div className="flex justify-end items-center space-x-3 mt-[19.3px] font-light text-[8px] sm:text-[12px] leading-[8px] sm:leading-[15px] tracking-[0.02em]">
                       {status === 0 && <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-blue2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleStartRound} disabled={doing}>Start New Round</button>}
                       {status === 1 &&
-                        <div className="flex flex-col w-full">
-                          <div className="flex space-x-3 justify-end">
-                            <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleDeposit} disabled={doing}>Deposit</button>
-                          </div>
-                          <span className="mt-5 font-light text-[12.61px] leading-[15.76px] text-white">Become Entropy Provider</span>
-                          <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                            <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                              <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Entropy" type="number" value={payload} onChange={e => setPayload(e.target.value)} />
-                            </div>
-                          </div>
-                          <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                            <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                              <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Salt" type="number" value={salt} onChange={e => setSalt(e.target.value)} />
-                            </div>
-                          </div>
-                          <div className="flex justify-end items-center space-x-3 mt-2">
-                            <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-blue2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateSalt} disabled={doing}>Generate Salt</button>
-                            <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateEntropy} disabled={doing}>Generate Entropy</button>
-                          </div>
-                          <div className="flex items-center space-x-3 mt-2">
-                            <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                              <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                                <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} type="number" />
-                              </div>
-                            </div>
-                            <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleSubmitEntropy} disabled={doing}>Submit Entropy</button>
-                          </div>
-                          <span className="mt-2 font-light text-[12.61px] leading-[15.76px] text-red1">Remember payload, salt value for entropy!</span>
+                      <div className="flex flex-col w-full">
+                        <div className="flex space-x-3 justify-end">
+                          <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleDeposit} disabled={doing}>Deposit</button>
                         </div>
+                        <span className="mt-5 font-light text-[12.61px] leading-[15.76px] text-white">Become Entropy Provider</span>
+                        <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                          <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
+                            <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Entropy" type="number" value={payload} onChange={e => setPayload(e.target.value)} />
+                          </div>
+                        </div>
+                        <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                          <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
+                            <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Salt" type="number" value={salt} onChange={e => setSalt(e.target.value)} />
+                          </div>
+                        </div>
+                        <div className="flex justify-end items-center space-x-3 mt-2">
+                          <button className="flex justify-center items-center space-x-1 px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={download} disabled={doing}>
+                            <DownloadIcon fontSize="small" />
+                            <span>Download</span>
+                          </button>
+                          <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-blue2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateSalt} disabled={doing}>Generate Salt</button>
+                          <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateEntropy} disabled={doing}>Generate Entropy</button>
+                        </div>
+                        <span className="mt-2 font-light text-[12.61px] leading-[15.76px] text-red1">Remember payload, salt value for entropy!</span>
+                        <div className="flex items-center space-x-3 mt-6">
+                          <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                            <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
+                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} type="number" />
+                            </div>
+                          </div>
+                          <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleSubmitEntropy} disabled={doing}>Submit Entropy</button>
+                        </div>
+                        <span className="mt-2 font-light text-[12.61px] leading-[15.76px] text-red1">Do not change it unless you know what you are doing</span>
+                      </div>
                       }
                       {status === 2 &&
                         <div className="flex flex-col space-y-2 w-full">
@@ -569,7 +596,7 @@ const Dashboard = () => {
                 </div>
                 <Tooltip title="This shows total mount of funds locked in this pool.">
                   <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                    <div className="flex flex-col justify-between items-center bg-poolInner rounded-sm pt-5 sm:pt-[24.05px] pb-3 sm:pb-[28.03px] px-[22px] sm:px-[50px] h-full">
+                    <div className="flex flex-col justify-between items-center bg-poolInner rounded-sm pt-5 sm:pt-[24.05px] pb-3 sm:pb-[28.03px] px-[22px] md:px-[50px] h-full">
                       <img className="w-[27.24px] h-[27.24px] sm:w-auto sm:h-auto" src="images/dollar.svg" alt="" />
                       <span className="mt-2 font-medium text-[20.26px] sm:text-[28.26px] leading-[25.32px] sm:leading-[35.32px] whitespace-nowrap">{total ? total.toString() / Math.pow(10, 18) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.800' }} />}</span>
                       <span className="mt-2 font-light text-[8.22px] sm:text-[13px] leading-[7.78px] sm:leading-[14px] tracking-[-0.02em] text-center whitespace-nowrap">Round Reward Pool</span>
