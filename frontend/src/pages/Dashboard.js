@@ -1,14 +1,14 @@
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { useWeb3React } from '@web3-react/core'
 import { useCookies } from "react-cookie";
-import { useNavigate } from "react-router-dom";
 import { Skeleton, Tooltip } from "@mui/material";
 import { ethers } from "ethers";
+import { ModalContext } from "../contexts/ModalContextProvider";
 import { toast } from "../utils/msTime";
 import Card from "../components/Card";
 
 const Dashboard = () => {
-  const nav = useNavigate()
+  const { setOpenConnectModal } = useContext(ModalContext);
   const { account } = useWeb3React()
   const [cookies, setCookie] = useCookies(["lotteries"])
   const [addresses, setAddresses] = useState([])
@@ -69,7 +69,7 @@ const Dashboard = () => {
             <span>Main</span>
           </div>
           <div className="flex flex-col items-center space-y-3 font-light text-[11px] leading-[13.75px] text-grey1 hover:text-white">
-            <div className="flex justify-center items-center rounded-full transition cursor-pointer" onClick={() => nav("/connect")}>
+            <div className="flex justify-center items-center rounded-full transition cursor-pointer" onClick={() => setOpenConnectModal(true)}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10.1753 19.8276C4.80582 19.8276 0.449463 15.4713 0.449463 10.1018C0.449463 4.73234 4.80582 0.375977 10.1753 0.375977C15.5448 0.375977 19.9011 4.73234 19.9011 10.1018C19.9011 15.4713 15.5448 19.8276 10.1753 19.8276ZM10.1753 1.59171C5.47447 1.59171 1.66519 5.40099 1.66519 10.1018C1.66519 14.8026 5.47447 18.6119 10.1753 18.6119C14.8761 18.6119 18.6854 14.8026 18.6854 10.1018C18.6854 5.40099 14.8761 1.59171 10.1753 1.59171Z" fill="currentColor" />
                 <path d="M9.14386 9.12291L6.58323 13.4336C6.49516 13.5819 6.66209 13.7502 6.81108 13.6634L11.1391 11.1402C11.1639 11.1258 11.1845 11.1052 11.199 11.0804L13.7412 6.75133C13.8286 6.60263 13.6608 6.43516 13.5122 6.52276L9.20265 9.06431C9.17843 9.07859 9.15821 9.09875 9.14386 9.12291Z" stroke="currentColor" strokeWidth="1.2" />
