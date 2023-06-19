@@ -147,7 +147,7 @@ const Lottery = () => {
     console.log("Getting lottery data")
     const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
     const ethcallProvider = new Provider(provider);
-    const _total = await provider.getBalance(ROUTERS.LOTTERY.address)
+    const _total = await provider.getBalance(key)
     setMulticallAddress(820, "0x914D4b9Bb542077BeA48DE5E3D6CF42e7ADfa1aa");
     await ethcallProvider.init();
     const _lotteryContract = new Contract(key, ROUTERS.LOTTERY_MULTICALL.abi);
@@ -230,7 +230,7 @@ const Lottery = () => {
       console.log("Getting lottery data")
       const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
       const ethcallProvider = new Provider(provider);
-      const _total = await provider.getBalance(ROUTERS.LOTTERY.address)
+      const _total = await provider.getBalance(key)
       setMulticallAddress(820, "0x914D4b9Bb542077BeA48DE5E3D6CF42e7ADfa1aa");
       await ethcallProvider.init();
       const _lotteryContract = new Contract(key, ROUTERS.LOTTERY_MULTICALL.abi);
@@ -287,7 +287,7 @@ const Lottery = () => {
       setLoaded(true)
     }
     init()
-  }, [lotteryContract])
+  }, [lotteryContract, key])
 
   return (
     <div className="flex flex-col-reverse lg:flex-row items-start gap-y-[30px] lg:space-x-[30.26px] gap:space-y-0 mt-[30.89px] w-full overflow-auto lg:pl-[32.64px] lg:pr-[13.16px]">
@@ -295,7 +295,7 @@ const Lottery = () => {
         <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
           <div className="flex bg-inputInner rounded-sm">
             <div className="flex flex-col flex-1 px-[19px] py-[9px] sm:pt-[21.58px] sm:px-[33.4px] sm:pb-[16.84px]">
-              <a className="font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]" href="https://explorer.callisto.network/address/0x97434C6863F4512d2630AA2c809E01DBf99d824B" target="_blank" rel="noreferrer">{ROUTERS.LOTTERY.address}</a>
+              <a className="font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]" href={"https://explorer.callisto.network/address/"+key} target="_blank" rel="noreferrer">{key}</a>
               <span className="mt-[2.92px] sm:mt-[5.6px] font-light text-[8px] sm:text-[11px] leading-[8px] sm:leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
               {loaded ?
                 <span className="mt-3 sm:mt-[21.91px] font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]">Round {roundId}</span>

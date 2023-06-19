@@ -9,7 +9,6 @@ export const ROUTERS = {
     },
     LOTTERY: {
         abi: LOTTERY_ABI,
-        address: '0x97434C6863F4512d2630AA2c809E01DBf99d824B'
     },
     LOTTERY_MULTICALL: {
         abi: LOTTERY_MULTICALL_ABI,
