@@ -43,7 +43,7 @@ const Network = () => {
   return (
     <div className="fixed top-1/2 -translate-y-1/2 w-full flex justify-center items-center gap-[125.5px]">
       <div className="flex flex-col items-center w-[355.77px]">
-        <img className="h-[69px]" src="images/network/logo.png" alt="" />
+        <img className="h-[69px]" src="/images/network/logo.png" alt="" />
         <div className="mt-[37px] text-[20.96px] leading-[26.21px] text-white">Select network</div>
         <div className="flex flex-col items-start mt-[57.87px] w-full">
           <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm">
@@ -71,7 +71,7 @@ const Network = () => {
           CONNECT
         </button>
       </div>
-      <img className="hidden w-[500px] xl:w-auto lg:block" src="images/auth-side.png" alt="" />
+      <img className="hidden w-[500px] xl:w-auto lg:block" src="/images/auth-side.png" alt="" />
     </div>
   );
 };

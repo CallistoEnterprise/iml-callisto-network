@@ -6,7 +6,7 @@ const Auth = () => {
   return (
     <div className="fixed top-1/2 -translate-y-1/2 w-full flex justify-center items-center gap-[125.5px]">
       <div className="flex flex-col items-center w-[354.41px]">
-        <img className="h-[69px]" src="images/network/logo.png" alt="" />
+        <img className="h-[69px]" src="/images/network/logo.png" alt="" />
         <div className="mt-[33px] text-[20.96px] leading-[26.21px] text-white">Welcome Back</div>
         <div className="flex flex-col items-start mt-[70px] w-full">
           <div className="ml-[23.34px] text-[15px] leading-[18.75px] text-grey1">Email</div>
@@ -44,7 +44,7 @@ const Auth = () => {
         </div>
       </div>
 
-      <img className="hidden w-[500px] xl:w-auto lg:block" src="images/auth-side.png" alt="" />
+      <img className="hidden w-[500px] xl:w-auto lg:block" src="/images/auth-side.png" alt="" />
     </div>
   );
 };

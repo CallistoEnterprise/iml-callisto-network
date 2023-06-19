@@ -1,22 +1,22 @@
 import Layout from "./layouts";
 import Auth from "./pages/Auth";
-import Connect from "./pages/Connect";
 import Dashboard from "./pages/Dashboard";
+import Lottery from "./pages/Lottery";
 import Network from "./pages/Network";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const App = () => {
   return (
-    <Layout>
-      <BrowserRouter>
+    <BrowserRouter>
+      <Layout>
         <Routes>
-          <Route path="/connect" element={<Connect />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/" element={<Dashboard />} />
+          <Route path="/lottery/:key" element={<Lottery />} />
           <Route path="/network" element={<Network />} />
         </Routes>
-      </BrowserRouter>
-    </Layout>
+      </Layout>
+    </BrowserRouter>
   );
 };
 

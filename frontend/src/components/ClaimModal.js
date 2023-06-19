@@ -11,7 +11,7 @@ const ClaimModal = () => {
 					<span className="font-medium text-[34.6615px] leading-[43px]">Congratulations!</span>
 					<span className="font-light text-[16.0403px] leading-[20px] max-w-[273px]">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi gravida.</span>
 					<button className="flex justify-center items-center w-[155.56px] h-[32.36px] bg-green2 mt-[32.48px] rounded-sm font-light text-[12px] leading-[100%] tracking-[0.02em]">Claim Reward</button>
-					<img className="absolute bottom-0 right-0" src="images/shapes.png" alt='' />
+					<img className="absolute bottom-0 right-0" src="/images/shapes.png" alt='' />
 				</div>
 			</div>
 		</Modal>

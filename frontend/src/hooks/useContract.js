@@ -32,6 +32,6 @@ export const useEntropy = () => {
     return useContract(ROUTERS.ENTROPY.address, ROUTERS.ENTROPY.abi, true)
 }
 
-export const useLottery = () => {
-    return useContract(ROUTERS.LOTTERY.address, ROUTERS.LOTTERY.abi, true)
+export const useLottery = (address) => {
+    return useContract(address, ROUTERS.LOTTERY.abi, true)
 }
