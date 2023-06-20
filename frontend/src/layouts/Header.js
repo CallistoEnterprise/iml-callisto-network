@@ -1,5 +1,5 @@
 import { MetaMaskAvatar } from 'react-metamask-avatar';
-import { useContext, useMemo, useRef, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useWeb3React } from '@web3-react/core'
 import { useCookies } from "react-cookie";
 import { copy } from "../utils/msTime";
@@ -12,7 +12,6 @@ const Header = () => {
   const { setOpenConnectModal } = useContext(ModalContext);
   const { account } = useWeb3React();
   const [copiedCode, setCopiedCode] = useState(false);
-  const avatarRef = useRef();
 
   useMemo(() => {
     if (account && cookies.accept === "true")
