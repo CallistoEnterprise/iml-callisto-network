@@ -19,19 +19,6 @@ const Header = () => {
       setCookie("user", account)
   }, [account, cookies.accept, setCookie])
 
-  useMemo(() => {
-    const element = avatarRef.current;
-    if (element && account) {
-      const addr = account.slice(2, 10);
-      const seed = parseInt(addr, 16);
-      const icon = jazzicon(20, seed); //generates a size 20 icon
-      if (element.firstChild) {
-        element.removeChild(element.firstChild);
-      }
-      element.appendChild(icon);
-    }
-  }, [account, avatarRef]);
-
   return (
     <div className="flex justify-end 2xl:justify-between space-x-[96.91px] items-center w-full flex-wrap px-6 lg:pl-[32.64px] lg:pr-[13.16px]">
       <div className="hidden 2xl:flex flex-1 justify-between items-center space-x-[45.13px]">
