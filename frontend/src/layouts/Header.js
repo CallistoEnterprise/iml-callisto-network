@@ -15,7 +15,7 @@ const Header = () => {
   useMemo(() => {
     if (account && cookies.accept === "true")
       setCookie("user", account)
-  }, [account, cookies.accept])
+  }, [account, cookies.accept, setCookie])
 
   return (
     <div className="flex justify-end 2xl:justify-between space-x-[96.91px] items-center w-full flex-wrap px-6 lg:pl-[32.64px] lg:pr-[13.16px]">
