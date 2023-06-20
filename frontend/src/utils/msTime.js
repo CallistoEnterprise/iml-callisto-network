@@ -26,28 +26,21 @@ export const secondsToDhms = (dateNow, dateFuture) => {
 }
 
 export const copy = (text) => {
-    if (navigator.clipboard && window.isSecureContext) {
-        alert(1)
-        navigator.clipboard.writeText(text)
-    }
-    else {
-        alert(2)
-        // text area method
-        let textArea = document.createElement("textarea");
-        textArea.value = text;
-        // make the textarea out of viewport
-        textArea.style.position = "fixed";
-        textArea.style.left = "-999999px";
-        textArea.style.top = "-999999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        return new Promise((res, rej) => {
-            // here the magic happens
-            document.execCommand('copy') ? res() : rej();
-            textArea.remove();
-        });
-    }
+    // text area method
+    let textArea = document.createElement("textarea");
+    textArea.value = text;
+    // make the textarea out of viewport
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    return new Promise((res, rej) => {
+        // here the magic happens
+        document.execCommand('copy') ? res() : rej();
+        textArea.remove();
+    });
 }
 
 export const toast = (text, type = "info") => {
@@ -72,7 +65,7 @@ export const toast = (text, type = "info") => {
 export const sumPercent = (data) => {
     let _new = [];
     data.forEach(each => {
-        if(_new.find(x => x.depositor === each.depositor)) {
+        if (_new.find(x => x.depositor === each.depositor)) {
             _new[_new.findIndex(x => x.depositor === each.depositor)].amount_deposited += each.amount_deposited
             _new[_new.findIndex(x => x.depositor === each.depositor)].percent += each.percent
         } else {
