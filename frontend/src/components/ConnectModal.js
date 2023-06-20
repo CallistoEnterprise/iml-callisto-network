@@ -63,7 +63,7 @@ const Connect = () => {
   }, [])
 
   return (
-    <div className="fixed w-full h-full top-0 left-0 bg-grey9">
+    <div className="fixed w-full h-full top-0 left-0 bg-grey9 z-[1]">
       <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-center items-center gap-[125.5px]">
         <div className="flex flex-col items-center w-[354.41px]">
           <img className="h-[69px]" src="/images/network/logo.png" alt="" />

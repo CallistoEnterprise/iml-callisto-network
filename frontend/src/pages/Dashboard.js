@@ -8,10 +8,9 @@ import { toast } from "../utils/msTime";
 import Card from "../components/Card";
 
 const Dashboard = () => {
-  const { setOpenConnectModal } = useContext(ModalContext);
+  const { setOpenConnectModal, addresses, setAddresses } = useContext(ModalContext);
   const { account } = useWeb3React()
-  const [cookies, setCookie] = useCookies(["lotteries"])
-  const [addresses, setAddresses] = useState([])
+  const [cookies, setCookie] = useCookies(["accept", "lotteries"])
   const [balance, setBalance] = useState(0)
   const [addressIn, setAddressIn] = useState("")
 
@@ -19,13 +18,19 @@ const Dashboard = () => {
     if (!ethers.utils.isAddress(addressIn)) {
       toast("Invalid address", "danger")
     } else {
-      if(!cookies.lotteries) {
-        setCookie("lotteries", JSON.stringify([addressIn]))
+      if (cookies.accept !== "true") {
+        let tmp = [...addresses]
+        tmp.push(addressIn)
+        setAddresses(tmp)
       }
       else {
-        let arr = cookies.lotteries
-        arr.push(addressIn)
-        setCookie("lotteries", arr);
+        if (!cookies.lotteries || cookies.lotteries.length === 0)
+          setCookie("lotteries", JSON.stringify([addressIn]))
+        else {
+          let arr = cookies.lotteries
+          arr.push(addressIn)
+          setCookie("lotteries", arr)
+        }
       }
       toast("Added lottery")
     }
@@ -38,7 +43,7 @@ const Dashboard = () => {
   }, [account])
 
   useMemo(() => {
-    if(cookies?.lotteries?.length > 0) setAddresses(cookies.lotteries)
+    if (cookies?.lotteries?.length > 0) setAddresses(cookies.lotteries)
   }, [cookies])
 
   return (
