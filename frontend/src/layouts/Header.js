@@ -1,9 +1,10 @@
-import { useContext, useMemo, useState } from 'react';
+import { MetaMaskAvatar } from 'react-metamask-avatar';
+import { useContext, useMemo, useRef, useState } from 'react';
 import { useWeb3React } from '@web3-react/core'
 import { useCookies } from "react-cookie";
 import { copy } from "../utils/msTime";
-import { ModalContext } from "../contexts/ModalContextProvider";
 import { Link, useLocation } from 'react-router-dom';
+import { ModalContext } from "../contexts/ModalContextProvider";
 
 const Header = () => {
   const loc = useLocation();
@@ -11,11 +12,25 @@ const Header = () => {
   const { setOpenConnectModal } = useContext(ModalContext);
   const { account } = useWeb3React();
   const [copiedCode, setCopiedCode] = useState(false);
+  const avatarRef = useRef();
 
   useMemo(() => {
     if (account && cookies.accept === "true")
       setCookie("user", account)
   }, [account, cookies.accept, setCookie])
+
+  useMemo(() => {
+    const element = avatarRef.current;
+    if (element && account) {
+      const addr = account.slice(2, 10);
+      const seed = parseInt(addr, 16);
+      const icon = jazzicon(20, seed); //generates a size 20 icon
+      if (element.firstChild) {
+        element.removeChild(element.firstChild);
+      }
+      element.appendChild(icon);
+    }
+  }, [account, avatarRef]);
 
   return (
     <div className="flex justify-end 2xl:justify-between space-x-[96.91px] items-center w-full flex-wrap px-6 lg:pl-[32.64px] lg:pr-[13.16px]">
@@ -49,7 +64,9 @@ const Header = () => {
           <svg className="hidden md:block cursor-pointer ml-[36.97px]" width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path fillRule="evenodd" clipRule="evenodd" d="M11.2161 1.81354C11.1368 1.37274 10.9201 0.962852 10.5909 0.642112C10.169 0.230975 9.59669 0 8.99995 0C8.40322 0 7.83093 0.230975 7.40897 0.642112C7.0765 0.966058 6.85883 1.38094 6.78145 1.82677C5.82174 2.15221 4.94064 2.68767 4.21107 3.40331C2.95493 4.63547 2.24995 6.30172 2.24999 8.03846V11.875C1.55489 12.3466 0.987222 12.9751 0.595426 13.7067C0.203631 14.4384 -0.000656163 15.2516 1.58329e-06 16.0769C1.58329e-06 16.2707 0.079019 16.4566 0.219671 16.5937C0.360322 16.7307 0.551086 16.8077 0.749998 16.8077H6.09522C6.22809 17.309 6.49649 17.7715 6.87864 18.1439C7.44125 18.692 8.20431 19 8.99995 19C9.7956 19 10.5587 18.692 11.1213 18.1439C11.5034 17.7715 11.7718 17.309 11.9047 16.8077H17.2499C17.4488 16.8077 17.6396 16.7307 17.7802 16.5937C17.9209 16.4566 17.9999 16.2707 17.9999 16.0769C18.0048 15.2548 17.8063 14.4437 17.4211 13.7123C17.036 12.9808 16.4756 12.3506 15.7874 11.875V8.03846C15.7874 6.29415 15.0763 4.62129 13.8104 3.38787C13.0736 2.66997 12.184 2.13517 11.2161 1.81354ZM8.99996 2.92308C7.60758 2.92308 6.27222 3.46202 5.28766 4.42134C4.3031 5.38066 3.74998 6.68178 3.74998 8.03846V12.2769C3.75051 12.4057 3.7161 12.5323 3.65025 12.644C3.5844 12.7556 3.48944 12.8483 3.37498 12.9127C2.91532 13.1711 2.51718 13.5217 2.20689 13.9412C1.8966 14.3606 1.68122 14.8395 1.57499 15.3462H6.74997H11.2499H16.4249C16.3187 14.8395 16.1033 14.3606 15.793 13.9412C15.4827 13.5217 15.0846 13.1711 14.6249 12.9127C14.5105 12.8483 14.4155 12.7556 14.3497 12.644C14.2838 12.5323 14.2494 12.4057 14.2499 12.2769V8.03846C14.2499 6.68178 13.6968 5.38066 12.7122 4.42134C11.7277 3.46202 10.3923 2.92308 8.99996 2.92308ZM10.2974 16.8077H7.70246C7.83432 17.0292 8.02358 17.213 8.25129 17.3408C8.479 17.4686 8.73717 17.5359 8.99995 17.5359C9.26274 17.5359 9.52091 17.4686 9.74862 17.3408C9.97633 17.213 10.1656 17.0292 10.2974 16.8077Z" fill="white" />
           </svg> */}
-          <img className="md:ml-[58.7px]" src="/images/avatar.png" alt="" />
+          <div className='md:ml-[58.7px]'>
+            <MetaMaskAvatar address={account} size={24} />
+          </div>
           <div className="flex items-center ml-[13.71px]">
             <span className="font-medium text-[16.46px] max-w-[128px] truncate">{account}</span>
             <div className="relative">

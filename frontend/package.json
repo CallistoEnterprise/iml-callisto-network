@@ -36,6 +36,7 @@
     "react-app-rewired": "^2.2.1",
     "react-cookie": "^4.1.1",
     "react-dom": "^18.0.0",
+    "react-metamask-avatar": "^1.2.1",
     "react-notifications": "^1.7.4",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.0",
