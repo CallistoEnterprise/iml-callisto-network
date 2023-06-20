@@ -1,14 +1,21 @@
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { useWeb3React } from '@web3-react/core'
+import { useCookies } from "react-cookie";
 import { copy } from "../utils/msTime";
 import { ModalContext } from "../contexts/ModalContextProvider";
 import { Link, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const loc = useLocation();
+  const [cookies, setCookie] = useCookies(["accept", "user"])
   const { setOpenConnectModal } = useContext(ModalContext);
   const { account } = useWeb3React();
   const [copiedCode, setCopiedCode] = useState(false);
+
+  useMemo(() => {
+    if (account && cookies.accept === "true")
+      setCookie("user", account)
+  }, [account, cookies.accept])
 
   return (
     <div className="flex justify-end 2xl:justify-between space-x-[96.91px] items-center w-full flex-wrap px-6 lg:pl-[32.64px] lg:pr-[13.16px]">
