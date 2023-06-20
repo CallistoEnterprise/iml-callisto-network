@@ -26,9 +26,12 @@ export const secondsToDhms = (dateNow, dateFuture) => {
 }
 
 export const copy = (text) => {
-    if (navigator.clipboard && window.isSecureContext)
+    if (navigator.clipboard && window.isSecureContext) {
+        alert(1)
         navigator.clipboard.writeText(text)
+    }
     else {
+        alert(2)
         // text area method
         let textArea = document.createElement("textarea");
         textArea.value = text;
