@@ -44,7 +44,7 @@ const Dashboard = () => {
 
   useMemo(() => {
     if (cookies?.lotteries?.length > 0) setAddresses(cookies.lotteries)
-  }, [cookies])
+  }, [cookies, setAddresses])
 
   return (
     <div className="flex flex-col-reverse lg:flex-row items-start gap-y-[30px] lg:space-x-[30.26px] gap:space-y-0 mt-[30.89px] w-full overflow-auto lg:pl-[32.64px] lg:pr-[13.16px]">
