@@ -82,7 +82,7 @@ const Dashboard = () => {
             </div>
             <span>Wallet</span>
           </div>
-          <div className="flex flex-col items-center space-y-3 font-light text-[11px] leading-[13.75px] text-grey1 hover:text-white">
+          {/* <div className="flex flex-col items-center space-y-3 font-light text-[11px] leading-[13.75px] text-grey1 hover:text-white">
             <div className="flex justify-center items-center rounded-full transition cursor-pointer">
               <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15.4499 4.90039C15.4499 4.90039 4.99865 4.90039 3.10445 4.90039C1.83863 4.90039 1.04688 6.13493 1.04688 6.95796V15.7578C1.04688 16.8071 1.89706 17.6573 2.94642 17.6573H15.6079C16.6568 17.6573 17.5074 16.8071 17.5074 15.7578V6.89459C17.5074 5.84646 16.4988 4.90039 15.4499 4.90039Z" stroke="currentColor" strokeWidth="1.4" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
@@ -102,7 +102,7 @@ const Dashboard = () => {
               </svg>
             </div>
             <span>History</span>
-          </div>
+          </div> */}
         </div>
         <div className="mt-5 w-full h-[1px] bg-grey8" />
       </div>
