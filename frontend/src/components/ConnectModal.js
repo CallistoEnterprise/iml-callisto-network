@@ -67,7 +67,7 @@ const Connect = () => {
       <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-center items-center gap-[125.5px]">
         <div className="flex flex-col items-center w-[354.41px]">
           <img className="h-[69px]" src="/images/network/logo.png" alt="" />
-          <div className="mt-[37px] text-[20.96px] leading-[26.21px] text-white">Select network</div>
+          <div className="mt-[37px] text-[20.96px] leading-[26.21px] text-white">Select Your Wallet</div>
           <div className="flex flex-col items-start mt-[57.87px] w-full">
             <div className="w-full h-[192.36px] mt-2 px-[1px] py-[1px] bg-inputOuter rounded-sm relative">
               <div className="flex justify-center items-center h-full px-[23.34px] py-[14.08px] bg-inputInner rounded-sm">
