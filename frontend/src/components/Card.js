@@ -30,7 +30,7 @@ const Card = ({ address }) => {
 					<div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
 						<div className="flex flex-col justify-between items-center bg-poolInner rounded-sm pt-5 sm:pt-[24.05px] pb-3 sm:pb-[28.03px] px-[22px] md:px-[50px] h-full">
 							<img className="w-[27.24px] h-[27.24px] sm:w-auto sm:h-auto" src="/images/dollar.svg" alt="" />
-							<span className="mt-2 font-medium text-[20.26px] sm:text-[28.26px] leading-[25.32px] sm:leading-[35.32px] whitespace-nowrap">{total ? total.toString() / Math.pow(10, 18) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.800' }} />}</span>
+							<span className="mt-2 font-medium text-[20.26px] sm:text-[28.26px] leading-[25.32px] sm:leading-[35.32px] whitespace-nowrap">{total ? (total.toString() / Math.pow(10, 18)).toFixed(3) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.800' }} />}</span>
 							<span className="mt-2 font-light text-[8.22px] sm:text-[13px] leading-[7.78px] sm:leading-[14px] tracking-[-0.02em] text-center whitespace-nowrap">Round Reward Pool</span>
 						</div>
 					</div>
