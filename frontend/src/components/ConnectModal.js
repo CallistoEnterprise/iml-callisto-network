@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import Web3 from "web3";
+import { useWeb3React } from '@web3-react/core'
 import { connections, connectorLocalStorageKey } from "../pages/entry";
 import { ModalContext } from "../contexts/ModalContextProvider";
 import useAuth from "../hooks/useAuth";
 
 const Connect = () => {
-  const { login: signin } = useAuth();
+  const { account } = useWeb3React();
+  const { login: signin, logout } = useAuth();
   const { setOpenConnectModal } = useContext(ModalContext);
   const [walletId, setWalletId] = useState(2000)
-
   const handleConnect = async () => {
     try {
       await window.ethereum.request({
@@ -54,6 +55,10 @@ const Connect = () => {
       }
     }
   };
+  const handleBrowse = async () => {
+    if(account) await logout();
+    setOpenConnectModal(false);
+  }
   useEffect(() => {
     if (window.ethereum) {
       window.ethereum.on("chainChanged", function (networkId) {
@@ -82,6 +87,9 @@ const Connect = () => {
           </div>
           <button className="flex justify-center w-full py-[13.17px] mt-[26.48px] bg-green1 rounded-sm text-[15px] leading-[18.75px]" onClick={handleConnect}>
             CONNECT
+          </button>
+          <button className="flex justify-center w-full py-[13.17px] mt-4 bg-green1 rounded-sm text-[15px] leading-[18.75px]" onClick={handleBrowse}>
+            BROWSE LOTTERY
           </button>
         </div>
         <img className="hidden w-[500px] xl:w-auto lg:block" src="/images/auth-side.png" alt="" />

@@ -329,7 +329,7 @@ const Lottery = () => {
                       </div>
                     </div>
                   </Tooltip>
-                  <span className="text-[16px]">Idle</span>
+                  <span className={"text-[16px]" + (status === 0 ? "" : " opacity-30")}>Idle</span>
                 </div>
                 <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
                   <Tooltip title="Users can deposit funds to participate in the lottery. Anyone can become an entropy provider and submit entropy during this phase as well">
@@ -355,7 +355,7 @@ const Lottery = () => {
                       </div>
                     </div>
                   </Tooltip>
-                  <span className="text-[16px]">Deposit phase</span>
+                  <span className={"text-[16px]" + (status === 1 ? "" : " opacity-30")}>Deposit phase</span>
                 </div>
                 <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
                   <Tooltip title="The lottery is awaiting for entropy to be revealed by entropy providers. Deposits are not accepted.">
@@ -381,7 +381,7 @@ const Lottery = () => {
                       </div>
                     </div>
                   </Tooltip>
-                  <span className="text-[16px]">Reveal phase</span>
+                  <span className={"text-[16px]" + (status === 2 ? "" : " opacity-30")}>Reveal phase</span>
                 </div>
                 <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
                   <Tooltip title="Winner must be calculated and the reward must be delivered before the next round will start.">
@@ -407,7 +407,7 @@ const Lottery = () => {
                       </div>
                     </div>
                   </Tooltip>
-                  <span className="text-[16px]">Winner calculation</span>
+                  <span className={"text-[16px]" + (status === 3 ? "" : " opacity-30")}>Winner calculation</span>
                 </div>
               </div>
               {status >= 0 ?
