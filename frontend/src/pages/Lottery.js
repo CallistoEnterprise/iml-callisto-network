@@ -25,6 +25,7 @@ const Lottery = () => {
   const [balance, setBalance] = useState(0)
   const [status, setStatus] = useState("-1")
   const [, setCurrentRound] = useState()
+  const [winner, setWinner] = useState()
   const [salt, setSalt] = useState(Math.floor(Math.random() * 90000000000).toString())
   const [saltForReveal, setSaltForReveal] = useState(Math.floor(Math.random() * 90000000000).toString())
   const [amount, setAmount] = useState(1000)
@@ -200,7 +201,11 @@ const Lottery = () => {
       setTime1([0, 0, 0, 0])
       setTime2([0, 0, 0, 0])
     }
-    setDepositData(sumPercent(_depositDataWithPercent))
+    const tmp = sumPercent(_depositDataWithPercent)
+    tmp.forEach(async (x) => {
+      if (await lotteryContract.is_winner(x.depositor)) setWinner(x.depositor)
+    })
+    setDepositData(tmp)
     setBalance(await window.web3.eth.getBalance(account))
     setLoaded(true)
   }
@@ -283,7 +288,11 @@ const Lottery = () => {
         setTime1([0, 0, 0, 0])
         setTime2([0, 0, 0, 0])
       }
-      setDepositData(sumPercent(_depositDataWithPercent))
+      const tmp = sumPercent(_depositDataWithPercent)
+      tmp.forEach(async (x) => {
+        if (await lotteryContract.is_winner(x.depositor)) setWinner(x.depositor)
+      })
+      setDepositData(tmp)
       setLoaded(true)
     }
     init()
@@ -295,7 +304,7 @@ const Lottery = () => {
         <div className="w-full px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
           <div className="flex bg-inputInner rounded-sm">
             <div className="flex flex-col flex-1 px-[19px] py-[9px] sm:pt-[21.58px] sm:px-[33.4px] sm:pb-[16.84px]">
-              <a className="font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]" href={"https://explorer.callisto.network/address/"+key} target="_blank" rel="noreferrer">{key}</a>
+              <a className="font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]" href={"https://explorer.callisto.network/address/" + key} target="_blank" rel="noreferrer">{key}</a>
               <span className="mt-[2.92px] sm:mt-[5.6px] font-light text-[8px] sm:text-[11px] leading-[8px] sm:leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
               {loaded ?
                 <span className="mt-3 sm:mt-[21.91px] font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]">Round {roundId}</span>
@@ -559,6 +568,9 @@ const Lottery = () => {
             </div>
           </div>
         </div>
+        {winner && status === 3 &&
+          <span className="text-green2">Winner Address: {winner}</span>
+        }
         {(status === 1 || status === 2 || status === 3) &&
           <div className="lg:px-[1px] lg:py-[1px] lg:bg-inputOuter rounded-sm px-6 lg:px-0">
             <div className="flex flex-col items-start lg:bg-inputInner rounded-sm lg:pl-[23.05px] lg:pr-[23.31px] lg:py-[18.77px]">
