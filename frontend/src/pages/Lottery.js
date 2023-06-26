@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import DownloadIcon from '@mui/icons-material/Download';
+import { Help } from "@mui/icons-material";
 import { useWeb3React } from '@web3-react/core'
 import { Contract, Provider, setMulticallAddress } from "ethers-multicall";
 import { useParams } from "react-router-dom";
@@ -441,17 +442,29 @@ const Lottery = () => {
                         <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleDeposit} disabled={doing}>Deposit</button>
                       </div>
                       <span className="mt-5 font-light text-[12.61px] leading-[15.76px] text-white">Become Entropy Provider</span>
+                      <div className="flex items-center space-x-2 mt-4">
+                        <span>Entropy</span>
+                        <Tooltip title="To submit entropy you must input this pure value.">
+                          <Help className="-mt-1" fontSize="small" />
+                        </Tooltip>
+                      </div>
                       <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                         <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
                           <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Entropy" type="number" value={payload} onChange={e => setPayload(e.target.value)} />
                         </div>
+                      </div>
+                      <div className="flex items-center space-x-2 mt-4">
+                        <span>Salt</span>
+                        <Tooltip title="To submit entropy you must input this pure value.">
+                          <Help className="-mt-1" fontSize="small" />
+                        </Tooltip>
                       </div>
                       <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                         <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
                           <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Salt" type="number" value={salt} onChange={e => setSalt(e.target.value)} />
                         </div>
                       </div>
-                      <div className="flex justify-end items-center space-x-3 mt-2">
+                      <div className="flex justify-end items-center space-x-3 mt-4">
                         <button className="flex justify-center items-center space-x-1 px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={download} disabled={doing}>
                           <DownloadIcon fontSize="small" />
                           <span>Download</span>
@@ -460,7 +473,13 @@ const Lottery = () => {
                         <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateEntropy} disabled={doing}>Generate Entropy</button>
                       </div>
                       <span className="mt-2 font-light text-[12.61px] leading-[15.76px] text-red1">Remember payload, salt value for entropy!</span>
-                      <div className="flex items-center space-x-3 mt-6">
+                      <div className="flex items-center space-x-2 mt-4">
+                        <span>Amount</span>
+                        <Tooltip title="For entropy you need to input amount essentially.">
+                          <Help className="-mt-1" fontSize="small" />
+                        </Tooltip>
+                      </div>
+                      <div className="flex items-center space-x-3 mt-2">
                         <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                           <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
                             <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} type="number" />
@@ -473,10 +492,22 @@ const Lottery = () => {
                   }
                   {status === 2 &&
                     <div className="flex flex-col space-y-2 w-full">
+                      <div className="flex items-center space-x-2">
+                        <span>Entropy</span>
+                        <Tooltip title="To reveal entropy you made, must input this pure value.">
+                          <Help className="-mt-1" fontSize="small" />
+                        </Tooltip>
+                      </div>
                       <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                         <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
                           <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Entropy" type="number" value={payloadForReveal} onChange={e => setPayloadForReveal(e.target.value)} />
                         </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span>Salt</span>
+                        <Tooltip title="You must input this pure value to reveal entropy you made.">
+                          <Help className="-mt-1" fontSize="small" />
+                        </Tooltip>
                       </div>
                       <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden w-full">
                         <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
