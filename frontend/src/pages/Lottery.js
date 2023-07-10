@@ -4,7 +4,7 @@ import { Help } from "@mui/icons-material";
 import { useWeb3React } from '@web3-react/core'
 import { Contract, Provider, setMulticallAddress } from "ethers-multicall";
 import { useParams } from "react-router-dom";
-import { Skeleton, Tooltip } from "@mui/material";
+import { Skeleton, Tooltip, LinearProgress } from "@mui/material";
 import { ethers } from "ethers";
 import { useEntropy, useLottery } from "../hooks/useContract";
 import { ROUTERS } from "../contracts/config";
@@ -16,10 +16,12 @@ const Lottery = () => {
   const { key } = useParams();
   const { setOpenConnectModal } = useContext(ModalContext);
   const [total, setTotal] = useState()
+  const [maxDepositPool, setMaxDepositPool] = useState("100000000000000000000")
   const [payload, setPayload] = useState(Math.floor(Math.random() * 90000000000).toString())
   const [payloadForReveal, setPayloadForReveal] = useState(Math.floor(Math.random() * 90000000000).toString())
   const [doing, setDoing] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  const [entropyAddress, setEntropyAddress] = useState()
   const [minAllowedBet, setMinAllowedBet] = useState(0)
   const [roundId, setRoundId] = useState(0), [, setRoundRewardPaid] = useState()
   const [depositData, setDepositData] = useState([])
@@ -33,7 +35,7 @@ const Lottery = () => {
   const [[dys1, hrs1, mins1, secs1], setTime1] = useState([0, 0, 0, 0])
   const [[dys2, hrs2, mins2, secs2], setTime2] = useState([0, 0, 0, 0])
 
-  const lotteryContract = useLottery(key), entropyContract = useEntropy()
+  const lotteryContract = useLottery(key), entropyContract = useEntropy(entropyAddress)
   const { account } = useWeb3React();
   let timerId1 = useRef()
   let timerId2 = useRef()
@@ -101,7 +103,7 @@ const Lottery = () => {
     setDoing(true)
     try {
       const provider = new ethers.providers.Web3Provider(window.ethereum)
-      await (await lotteryContract.connect(provider.getSigner()).finish_round(account)).wait()
+      await (await lotteryContract.connect(provider.getSigner()).finish_round(winner ?? "0x0000000000000000000000000000000000000000")).wait()
       await getData()
       toast("Round is finished")
     } catch (e) {
@@ -154,61 +156,66 @@ const Lottery = () => {
     await ethcallProvider.init();
     const _lotteryContract = new Contract(key, ROUTERS.LOTTERY_MULTICALL.abi);
     const _tmp = await ethcallProvider.all([
-      _lotteryContract.min_allowed_bet(),
+      // _lotteryContract.min_allowed_bet(),
       _lotteryContract.current_round(),
-      _lotteryContract.get_phase(),
-      _lotteryContract.current_round(),
-      _lotteryContract.round_reward_paid(),
-      _lotteryContract.round_start_timestamp(),
-      _lotteryContract.deposits_phase_duration(),
-      _lotteryContract.entropy_phase_duration(),
+      // _lotteryContract.get_phase(),
+      // _lotteryContract.current_round(),
+      // _lotteryContract.round_reward_paid(),
+      // _lotteryContract.round_start_timestamp(),
+      // _lotteryContract.deposits_phase_duration(),
+      // _lotteryContract.entropy_phase_duration(),
+      // _lotteryContract.entropy_contract(),
+      // _lotteryContract.max_deposit_pool_threshold(),
     ]);
-    const multiResult = (_tmp.map(x => x._isBigNumber ? x.toString() : x))
-    const roundStartData = await lotteryContract.queryFilter(lotteryContract.filters.NewRound(multiResult[1]));
-    const data = await lotteryContract.queryFilter(lotteryContract.filters.Deposit());
-    const _depositData = data.filter(x => x.blockNumber >= roundStartData[0].blockNumber).map(x => {
-      const tmp = x.decode(x.data, x.topics)
-      return {
-        amount_credited: ethers.utils.formatEther(tmp["amount_credited"]),
-        amount_deposited: ethers.utils.formatEther(tmp["amount_deposited"]),
-        depositor: tmp["depositor"],
-      }
-    })
-    let sum = 0; _depositData.forEach(x => sum += parseFloat(x.amount_deposited));
-    const _depositDataWithPercent = _depositData.map(x => {
-      return { ...x, amount_deposited: parseFloat(x.amount_deposited), percent: x.amount_deposited / sum * 100 }
-    })
-    setTotal(_total)
-    setMinAllowedBet(multiResult[0])
-    setRoundId(multiResult[1])
-    setStatus(multiResult[2])
-    setCurrentRound(multiResult[3])
-    setRoundRewardPaid(multiResult[4])
-    const d1 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6])) * 1000)
-    const d2 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6]) + parseInt(multiResult[7])) * 1000)
-    if (multiResult[2] === 0) {
-      setTime1([0, 1, 0, 0])
-      setTime2([0, 1, 0, 0])
-    }
-    if (multiResult[2] === 1) {
-      setTime1([secondsToDhms(new Date(), d1).dDisplay, secondsToDhms(new Date(), d1).hDisplay, secondsToDhms(new Date(), d1).mDisplay, secondsToDhms(new Date(), d1).sDisplay])
-      setTime2([0, 1, 0, 0])
-    }
-    if (multiResult[2] === 2) {
-      setTime1([0, 0, 0, 0])
-      setTime2([secondsToDhms(new Date(), d2).dDisplay, secondsToDhms(new Date(), d2).hDisplay, secondsToDhms(new Date(), d2).mDisplay, secondsToDhms(new Date(), d2).sDisplay])
-    }
-    if (multiResult[2] === 3) {
-      setTime1([0, 0, 0, 0])
-      setTime2([0, 0, 0, 0])
-    }
-    const tmp = sumPercent(_depositDataWithPercent)
-    tmp.forEach(async (x) => {
-      if (await lotteryContract.is_winner(x.depositor)) setWinner(x.depositor)
-    })
-    setDepositData(tmp)
-    setBalance(await window.web3.eth.getBalance(account))
-    setLoaded(true)
+    console.log(_tmp)
+    // const multiResult = (_tmp.map(x => x._isBigNumber ? x.toString() : x))
+    // const roundStartData = await lotteryContract.queryFilter(lotteryContract.filters.NewRound(multiResult[1]));
+    // const data = await lotteryContract.queryFilter(lotteryContract.filters.Deposit());
+    // const _depositData = data.filter(x => x.blockNumber >= roundStartData[0].blockNumber).map(x => {
+    //   const tmp = x.decode(x.data, x.topics)
+    //   return {
+    //     amount_credited: ethers.utils.formatEther(tmp["amount_credited"]),
+    //     amount_deposited: ethers.utils.formatEther(tmp["amount_deposited"]),
+    //     depositor: tmp["depositor"],
+    //   }
+    // })
+    // let sum = 0; _depositData.forEach(x => sum += parseFloat(x.amount_deposited));
+    // const _depositDataWithPercent = _depositData.map(x => {
+    //   return { ...x, amount_deposited: parseFloat(x.amount_deposited), percent: x.amount_deposited / sum * 100 }
+    // })
+    // setTotal(_total)
+    // setMinAllowedBet(multiResult[0])
+    // setRoundId(multiResult[1])
+    // setStatus(multiResult[2])
+    // setCurrentRound(multiResult[3])
+    // setRoundRewardPaid(multiResult[4])
+    // setEntropyAddress(multiResult[8])
+    // // setMaxDepositPool(multiResult[9])
+    // const d1 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6])) * 1000)
+    // const d2 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6]) + parseInt(multiResult[7])) * 1000)
+    // if (multiResult[2] === 0) {
+    //   setTime1([0, 1, 0, 0])
+    //   setTime2([0, 1, 0, 0])
+    // }
+    // if (multiResult[2] === 1) {
+    //   setTime1([secondsToDhms(new Date(), d1).dDisplay, secondsToDhms(new Date(), d1).hDisplay, secondsToDhms(new Date(), d1).mDisplay, secondsToDhms(new Date(), d1).sDisplay])
+    //   setTime2([0, 1, 0, 0])
+    // }
+    // if (multiResult[2] === 2) {
+    //   setTime1([0, 0, 0, 0])
+    //   setTime2([secondsToDhms(new Date(), d2).dDisplay, secondsToDhms(new Date(), d2).hDisplay, secondsToDhms(new Date(), d2).mDisplay, secondsToDhms(new Date(), d2).sDisplay])
+    // }
+    // if (multiResult[2] === 3) {
+    //   setTime1([0, 0, 0, 0])
+    //   setTime2([0, 0, 0, 0])
+    // }
+    // const tmp = sumPercent(_depositDataWithPercent)
+    // tmp.forEach(async (x) => {
+    //   if (await lotteryContract.is_winner(x.depositor)) setWinner(x.depositor)
+    // })
+    // setDepositData(tmp)
+    // setBalance(await window.web3.eth.getBalance(account))
+    // setLoaded(true)
   }
 
   useMemo(async () => {
@@ -233,23 +240,29 @@ const Lottery = () => {
 
   useMemo(async () => {
     const init = async () => {
-      console.log("Getting lottery data")
+      console.log("Getting lottery data - init")
       const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
       const ethcallProvider = new Provider(provider);
       const _total = await provider.getBalance(key)
+      setTotal(_total)
       setMulticallAddress(820, "0x914D4b9Bb542077BeA48DE5E3D6CF42e7ADfa1aa");
+      console.log(await lotteryContract.get_round())
       await ethcallProvider.init();
       const _lotteryContract = new Contract(key, ROUTERS.LOTTERY_MULTICALL.abi);
       const _tmp = await ethcallProvider.all([
         _lotteryContract.min_allowed_bet(),
-        _lotteryContract.current_round(),
-        _lotteryContract.get_phase(),
-        _lotteryContract.current_round(),
-        _lotteryContract.round_reward_paid(),
-        _lotteryContract.round_start_timestamp(),
-        _lotteryContract.deposits_phase_duration(),
-        _lotteryContract.entropy_phase_duration(),
+        // _lotteryContract.current_round(),
+        // _lotteryContract.get_phase(),
+        // _lotteryContract.current_round(),
+        // _lotteryContract.round_reward_paid(),
+        // _lotteryContract.round_start_timestamp(),
+        // _lotteryContract.deposits_phase_duration(),
+        // _lotteryContract.entropy_phase_duration(),
+        // _lotteryContract.entropy_contract(),
+        // _lotteryContract.max_deposit_pool_threshold(),
       ]);
+      console.log(_tmp)
+      // console.log("_tmp", await lotteryContract.max_deposit_pool_threshold())
       const multiResult = (_tmp.map(x => x._isBigNumber ? x.toString() : x))
       const roundStartData = await lotteryContract.queryFilter(lotteryContract.filters.NewRound(multiResult[1]));
       const data = await lotteryContract.queryFilter(lotteryContract.filters.Deposit());
@@ -265,12 +278,13 @@ const Lottery = () => {
       const _depositDataWithPercent = _depositData.map(x => {
         return { ...x, amount_deposited: parseFloat(x.amount_deposited), percent: x.amount_deposited / sum * 100 }
       })
-      setTotal(_total)
       setMinAllowedBet(multiResult[0])
       setRoundId(multiResult[1])
       setStatus(multiResult[2])
       setCurrentRound(multiResult[3])
       setRoundRewardPaid(multiResult[4])
+      setEntropyAddress(multiResult[8])
+      // setMaxDepositPool(multiResult[8])
       const d1 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6])) * 1000)
       const d2 = new Date((parseInt(multiResult[5]) + parseInt(multiResult[6]) + parseInt(multiResult[7])) * 1000)
       if (multiResult[2] === 0) {
@@ -299,6 +313,40 @@ const Lottery = () => {
     init()
   }, [lotteryContract, key])
 
+  useMemo(() => {
+    setInterval(async () => {
+      const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
+      const ethcallProvider = new Provider(provider);
+      const _total = await provider.getBalance(key)
+      setMulticallAddress(820, "0x914D4b9Bb542077BeA48DE5E3D6CF42e7ADfa1aa");
+      await ethcallProvider.init();
+      const _lotteryContract = new Contract(key, ROUTERS.LOTTERY_MULTICALL.abi);
+      const multiResult = await ethcallProvider.all([
+        _lotteryContract.current_round(),
+      ]);
+      const data = await lotteryContract.queryFilter(lotteryContract.filters.Deposit());
+      const roundStartData = await lotteryContract.queryFilter(lotteryContract.filters.NewRound(multiResult[1]));
+      const _depositData = data.filter(x => x.blockNumber >= roundStartData[0].blockNumber).map(x => {
+        const tmp = x.decode(x.data, x.topics)
+        return {
+          amount_credited: ethers.utils.formatEther(tmp["amount_credited"]),
+          amount_deposited: ethers.utils.formatEther(tmp["amount_deposited"]),
+          depositor: tmp["depositor"],
+        }
+      })
+      let sum = 0; _depositData.forEach(x => sum += parseFloat(x.amount_deposited));
+      const _depositDataWithPercent = _depositData.map(x => {
+        return { ...x, amount_deposited: parseFloat(x.amount_deposited), percent: x.amount_deposited / sum * 100 }
+      })
+      setTotal(_total)
+      const tmp = sumPercent(_depositDataWithPercent)
+      tmp.forEach(async (x) => {
+        if (await lotteryContract.is_winner(x.depositor)) setWinner(x.depositor)
+      })
+      setDepositData(tmp)
+    }, 5000)
+  }, [])
+
   return (
     <div className="flex flex-col-reverse lg:flex-row items-start gap-y-[30px] lg:space-x-[30.26px] gap:space-y-0 mt-[30.89px] w-full overflow-auto lg:pl-[32.64px] lg:pr-[13.16px]">
       <div className="flex flex-col space-y-[15.56px] w-full lg:w-auto px-6 lg:px-0">
@@ -307,6 +355,8 @@ const Lottery = () => {
             <div className="flex flex-col flex-1 px-[19px] py-[9px] sm:pt-[21.58px] sm:px-[33.4px] sm:pb-[16.84px]">
               <a className="font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]" href={"https://explorer.callisto.network/address/" + key} target="_blank" rel="noreferrer">{key}</a>
               <span className="mt-[2.92px] sm:mt-[5.6px] font-light text-[8px] sm:text-[11px] leading-[8px] sm:leading-[13.75px] tracking-[-0.02em] text-grey1">Contract address</span>
+              <a className="mt-2 font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]" href={"https://explorer.callisto.network/address/" + entropyAddress} target="_blank" rel="noreferrer">{entropyAddress}</a>
+    					<span className="mt-[2.92px] sm:mt-[5.6px] font-light text-[8px] sm:text-[11px] leading-[8px] sm:leading-[13.75px] tracking-[-0.02em] text-grey1">Entropy address</span>
               {loaded ?
                 <span className="mt-3 sm:mt-[21.91px] font-medium text-[8.49px] sm:text-[15px] leading-[10.61px] sm:leading-[18.75px]">Round {roundId}</span>
                 :
@@ -315,7 +365,7 @@ const Lottery = () => {
                 </div>
               }
               <div className="flex flex-col items-start space-y-4">
-                <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
+                <div className={"flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0 px-3 py-1 rounded-sm" + (status === 0 ? " bg-inputOuter" : "")}>
                   <Tooltip title="The lottery is awaiting deposit to start a new round. It will remain in idle state until the next round starts">
                     <div className="flex items-center space-x-[14px] sm:space-x-9 invisible">
                       <div className="flex flex-col items-center">
@@ -341,7 +391,7 @@ const Lottery = () => {
                   </Tooltip>
                   <span className={"text-[16px]" + (status === 0 ? "" : " opacity-30")}>Idle</span>
                 </div>
-                <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
+                <div className={"flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0 px-3 py-1 rounded-sm" + (status === 1 ? " bg-inputOuter" : "")}>
                   <Tooltip title="Users can deposit funds to participate in the lottery. Anyone can become an entropy provider and submit entropy during this phase as well">
                     <div className={"flex items-center space-x-[14px] sm:space-x-9" + (status !== 1 ? " opacity-10" : "")}>
                       <div className="flex flex-col items-center">
@@ -367,7 +417,7 @@ const Lottery = () => {
                   </Tooltip>
                   <span className={"text-[16px]" + (status === 1 ? "" : " opacity-30")}>Deposit phase</span>
                 </div>
-                <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
+                <div className={"flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0 px-3 py-1 rounded-sm" + (status === 2 ? " bg-inputOuter" : "")}>
                   <Tooltip title="The lottery is awaiting for entropy to be revealed by entropy providers. Deposits are not accepted.">
                     <div className={"flex items-center space-x-[14px] sm:space-x-9" + (status !== 2 ? " opacity-10" : "")}>
                       <div className="flex flex-col items-center">
@@ -393,7 +443,7 @@ const Lottery = () => {
                   </Tooltip>
                   <span className={"text-[16px]" + (status === 2 ? "" : " opacity-30")}>Reveal phase</span>
                 </div>
-                <div className="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0">
+                <div className={"flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-x-7 md:space-y-0 px-3 py-1 rounded-sm" + (status === 3 ? " bg-inputOuter" : "")}>
                   <Tooltip title="Winner must be calculated and the reward must be delivered before the next round will start.">
                     <div className="flex items-center space-x-[14px] sm:space-x-9 invisible">
                       <div className="flex flex-col items-center">
@@ -421,13 +471,15 @@ const Lottery = () => {
                 </div>
               </div>
               {status >= 0 ?
-                <span className="mt-3 font-light text-[14px] sm:text-[21px] leading-[100%] tracking-[-0.02em] text-green1">
-                  Status:
-                  {status === 0 && " The round is finished and reward is already paid and we can start a new round"}
-                  {status === 1 && " The round is ongoing (and it is in Deposit phase)"}
-                  {status === 2 && " The round is ongoing (and its Reveal phase)"}
-                  {status === 3 && " The round is finished and reward must be paid"}
-                </span>
+                <div className="mt-3 font-light text-[14px] sm:text-[21px] leading-[110%] tracking-[-0.02em] text-green1 max-w-[400px] bg-inputOuter p-[1px] rounded-sm">
+                  <div className="bg-inputInner rounded-sm p-3">
+                    Status:
+                    {status === 0 && " The round is finished and reward is already paid and we can start a new round"}
+                    {status === 1 && " The round is ongoing (and it is in Deposit phase)"}
+                    {status === 2 && " The round is ongoing (and its Reveal phase)"}
+                    {status === 3 && " The round is finished and reward must be paid"}
+                  </div>
+                </div>
                 :
                 <div className="mt-3">
                   <Skeleton variant="text" sx={{ bgcolor: 'grey.800' }} />
@@ -438,65 +490,66 @@ const Lottery = () => {
                   {status === 0 && <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-blue2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleStartRound} disabled={doing}>Start New Round</button>}
                   {status === 1 &&
                     <div className="flex flex-col w-full">
-                      <div className="flex space-x-3 justify-end">
+                      <div className="flex flex-col items-end space-y-3 border border-black2 p-3 rounded-sm">
+                        <Tooltip title="To submit entropy you must input this pure value.">
+                          <Help className="-mt-1" fontSize="small" />
+                        </Tooltip>
                         <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleDeposit} disabled={doing}>Deposit</button>
                       </div>
-                      <span className="mt-5 font-light text-[12.61px] leading-[15.76px] text-white">Become Entropy Provider</span>
-                      <div className="flex items-center space-x-2 mt-4">
-                        <span>Entropy</span>
+                      <div className="flex flex-col w-full border border-black2 p-3 mt-5 relative rounded-sm">
                         <Tooltip title="To submit entropy you must input this pure value.">
-                          <Help className="-mt-1" fontSize="small" />
+                          <Help className="-mt-1 absolute top-3 right-3" fontSize="small" />
                         </Tooltip>
-                      </div>
-                      <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                        <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                          <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Entropy" type="number" value={payload} onChange={e => setPayload(e.target.value)} />
+                        <span className="font-light text-[12.61px] leading-[15.76px] text-white">Become Entropy Provider</span>
+                        <div className="flex items-center space-x-2 mt-4">
+                          <span>Entropy</span>
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-2 mt-4">
-                        <span>Salt</span>
-                        <Tooltip title="To submit entropy you must input this pure value.">
-                          <Help className="-mt-1" fontSize="small" />
-                        </Tooltip>
-                      </div>
-                      <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                        <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                          <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Salt" type="number" value={salt} onChange={e => setSalt(e.target.value)} />
-                        </div>
-                      </div>
-                      <div className="flex justify-end items-center space-x-3 mt-4">
-                        <button className="flex justify-center items-center space-x-1 px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={download} disabled={doing}>
-                          <DownloadIcon fontSize="small" />
-                          <span>Download</span>
-                        </button>
-                        <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-blue2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateSalt} disabled={doing}>Generate Salt</button>
-                        <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateEntropy} disabled={doing}>Generate Entropy</button>
-                      </div>
-                      <span className="mt-2 font-light text-[12.61px] leading-[15.76px] text-red1">Remember payload, salt value for entropy!</span>
-                      <div className="flex items-center space-x-2 mt-4">
-                        <span>Amount</span>
-                        <Tooltip title="For entropy you need to input amount essentially.">
-                          <Help className="-mt-1" fontSize="small" />
-                        </Tooltip>
-                      </div>
-                      <div className="flex items-center space-x-3 mt-2">
-                        <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                        <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                           <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-                            <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} type="number" />
+                            <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Entropy" type="number" value={payload} onChange={e => setPayload(e.target.value)} />
                           </div>
                         </div>
-                        <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleSubmitEntropy} disabled={doing}>Submit Entropy</button>
+                        <div className="flex items-center space-x-2 mt-4">
+                          <span>Salt</span>
+                        </div>
+                        <div className="mt-2 flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                          <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
+                            <input className="w-full font-light text-[12.61px] leading-[15.76px] placeholder-grey1" placeholder="Salt" type="number" value={salt} onChange={e => setSalt(e.target.value)} />
+                          </div>
+                        </div>
+                        <div className="flex justify-end items-center space-x-3 mt-4">
+                          <button className="flex justify-center items-center space-x-1 px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={download} disabled={doing}>
+                            <DownloadIcon fontSize="small" />
+                            <span>Download</span>
+                          </button>
+                          <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-blue2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateSalt} disabled={doing}>Generate Salt</button>
+                          <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleGenerateEntropy} disabled={doing}>Generate Entropy</button>
+                        </div>
+                        <span className="mt-2 font-light text-[12.61px] leading-[15.76px] text-red1">Remember payload, salt value for entropy!</span>
+                        <div className="flex items-center space-x-2 mt-4">
+                          <span>Amount</span>
+                        </div>
+                        <div className="flex items-center space-x-3 mt-2">
+                          <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+                            <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
+                              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Amount" value={amount} onChange={e => setAmount(e.target.value)} type="number" />
+                            </div>
+                          </div>
+                          <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-green2 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleSubmitEntropy} disabled={doing}>Submit Entropy</button>
+                        </div>
+                        <span className="mt-2 font-light text-[12.61px] leading-[15.76px] text-red1">Do not change it unless you know what you are doing</span>
                       </div>
-                      <span className="mt-2 font-light text-[12.61px] leading-[15.76px] text-red1">Do not change it unless you know what you are doing</span>
                     </div>
                   }
                   {status === 2 &&
+                  <div className="flex flex-col w-full border border-black2 p-3 mt-5 relative rounded-sm">
+                    <Tooltip title="To submit entropy you must input this pure value.">
+                      <Help className="-mt-1 absolute top-3 right-3" fontSize="small" />
+                    </Tooltip>
+
                     <div className="flex flex-col space-y-2 w-full">
                       <div className="flex items-center space-x-2">
                         <span>Entropy</span>
-                        <Tooltip title="To reveal entropy you made, must input this pure value.">
-                          <Help className="-mt-1" fontSize="small" />
-                        </Tooltip>
                       </div>
                       <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
                         <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
@@ -505,9 +558,6 @@ const Lottery = () => {
                       </div>
                       <div className="flex items-center space-x-2">
                         <span>Salt</span>
-                        <Tooltip title="You must input this pure value to reveal entropy you made.">
-                          <Help className="-mt-1" fontSize="small" />
-                        </Tooltip>
                       </div>
                       <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden w-full">
                         <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
@@ -518,16 +568,23 @@ const Lottery = () => {
                         <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-red1 disabled:opacity-50 disabled:cursor-not-allowed" onClick={handleRevealEntropy} disabled={doing}>Reveal Entropy</button>
                       </div>
                     </div>
+                  </div>
                   }
-                  {status === 3 && <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-red1 disabled:opacity-50 disabled:cursor-not-allowed" disabled={doing} onClick={handleFinishRound}>Finish Current Round</button>}
+                  {status === 3 && <button className="flex justify-center items-center px-3 sm:px-6 h-6 sm:h-[32.36px] rounded-tiny sm:rounded-sm bg-red1 disabled:opacity-50 disabled:cursor-not-allowed" disabled={doing || !loaded} onClick={handleFinishRound}>Finish Current Round</button>}
                 </div>
               }
             </div>
             <Tooltip title="This shows total mount of funds locked in this pool.">
               <div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-                <div className="flex flex-col justify-between items-center bg-poolInner rounded-sm pt-5 sm:pt-[24.05px] pb-3 sm:pb-[28.03px] px-[22px] md:px-[50px] h-full">
+                <div className="flex flex-col items-center bg-poolInner rounded-sm pt-5 sm:pt-[24.05px] pb-3 sm:pb-[28.03px] px-[22px] md:px-[50px] h-full">
                   <img className="w-[27.24px] h-[27.24px] sm:w-auto sm:h-auto" src="/images/dollar.svg" alt="" />
+                  <span className="mt-2 font-light text-[8.22px] sm:text-[13px] leading-[7.78px] sm:leading-[14px] tracking-[-0.02em] text-center whitespace-nowrap">Current Deposit</span>
                   <span className="mt-2 font-medium text-[20.26px] sm:text-[28.26px] leading-[25.32px] sm:leading-[35.32px] whitespace-nowrap">{total ? (total.toString() / Math.pow(10, 18)).toFixed(3) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.800' }} />}</span>
+                  <span className="mt-6 font-light text-[8.22px] sm:text-[13px] leading-[7.78px] sm:leading-[14px] tracking-[-0.02em] text-center whitespace-nowrap text-green2">Max Deposit</span>
+                  <span className="mt-2 font-medium text-[20.26px] sm:text-[28.26px] leading-[25.32px] sm:leading-[35.32px] whitespace-nowrap text-green2">{maxDepositPool  ? (maxDepositPool.toString() / Math.pow(10, 18)).toFixed(3) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.800' }} />}</span>
+                  <div className="mt-6 w-full">
+                    <LinearProgress variant="determinate" className="progress" value={total/maxDepositPool * 100 > 100 ? 100 : total/maxDepositPool * 100} />
+                  </div>
                   <span className="mt-2 font-light text-[8.22px] sm:text-[13px] leading-[7.78px] sm:leading-[14px] tracking-[-0.02em] text-center whitespace-nowrap">Round Reward Pool</span>
                 </div>
               </div>

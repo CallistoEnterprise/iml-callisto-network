@@ -28,8 +28,8 @@ export const useContract = (address, ABI, withSignerIfPossible = true) => {
 }
 
 
-export const useEntropy = () => {
-    return useContract(ROUTERS.ENTROPY.address, ROUTERS.ENTROPY.abi, true)
+export const useEntropy = (address) => {
+    return useContract(address, ROUTERS.ENTROPY.abi, true)
 }
 
 export const useLottery = (address) => {

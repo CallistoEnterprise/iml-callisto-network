@@ -27,9 +27,14 @@ const Dashboard = () => {
         if (!cookies.lotteries || cookies.lotteries.length === 0)
           setCookie("lotteries", JSON.stringify([addressIn]))
         else {
-          let arr = cookies.lotteries
-          arr.push(addressIn)
-          setCookie("lotteries", arr)
+          if(cookies.lotteries.some(x => x === addressIn)) {
+            toast("Lottery exists")
+          }
+          else {
+            let arr = cookies.lotteries
+            arr.push(addressIn)
+            setCookie("lotteries", arr)
+          }
         }
       }
       toast("Added lottery")
@@ -49,6 +54,9 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col-reverse lg:flex-row items-start gap-y-[30px] lg:space-x-[30.26px] gap:space-y-0 mt-[30.89px] w-full overflow-auto lg:pl-[32.64px] lg:pr-[13.16px]">
       <div className="flex flex-col space-y-[15.56px] w-full lg:w-auto px-6 lg:px-0">
+        <span className="mb-3 font-light text-[14px] sm:text-[18px] leading-[100%] tracking-[-0.02em] text-green1">
+          List of available lotteries ({addresses.length})
+        </span>
         {addresses.map((x, i) =>
           <Card key={i} address={x} />
         )}

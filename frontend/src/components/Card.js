@@ -1,16 +1,30 @@
 import { useMemo, useState } from "react";
-import { Tooltip, Skeleton } from "@mui/material";
+import { Tooltip, Skeleton, LinearProgress } from "@mui/material";
 import { Link } from "react-router-dom";
 import { ethers } from "ethers";
+import { Contract, Provider, setMulticallAddress } from "ethers-multicall";
+import { ROUTERS } from "../contracts/config";
 
 const Card = ({ address }) => {
 	const [total, setTotal] = useState()
+	const [maxDepositPool, setMaxDepositPool] = useState("100000000000000000000")
+	const [status, setStatus] = useState("-1")
 
 	useMemo(async () => {
 		if (address?.length > 0) {
 			const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
 			const _total = await provider.getBalance(address)
 			setTotal(_total);
+
+			const ethcallProvider = new Provider(provider);
+			setMulticallAddress(820, "0x914D4b9Bb542077BeA48DE5E3D6CF42e7ADfa1aa");
+			await ethcallProvider.init();
+			const _lotteryContract = new Contract(address, ROUTERS.LOTTERY_MULTICALL.abi);
+			const _tmp = await ethcallProvider.all([
+				_lotteryContract.get_phase(),
+			]);
+			console.log("tmp", _tmp[0])
+			setStatus(_tmp[0])
 		}
 	}, [address])
 
@@ -25,12 +39,32 @@ const Card = ({ address }) => {
 						<div className="w-3 h-3 rounded-[2px] bg-green2" />
 					</div>
 					<span className="mt-1 text-[11px] leading-[13.75px] tracking-[-0.02em] text-grey1">Deposit to enter the lottery</span>
+					{status >= 0 ?
+						<div className="mt-3 font-light text-[14px] sm:text-[21px] leading-[110%] tracking-[-0.02em] text-green1 max-w-[400px] bg-inputOuter p-[1px] rounded-sm">
+							<div className="bg-inputInner rounded-sm p-3">
+								Status:
+								{status === 0 && " The round is finished and reward is already paid and we can start a new round"}
+								{status === 1 && " The round is ongoing (and it is in Deposit phase)"}
+								{status === 2 && " The round is ongoing (and its Reveal phase)"}
+								{status === 3 && " The round is finished and reward must be paid"}
+							</div>
+						</div>
+						:
+						<div className="mt-3">
+							<Skeleton variant="text" width={100} sx={{ bgcolor: 'grey.800' }} />
+						</div>
+					}
 				</div>
 				<Tooltip title="This shows total mount of funds locked in this pool.">
 					<div className="px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
 						<div className="flex flex-col justify-between items-center bg-poolInner rounded-sm pt-5 sm:pt-[24.05px] pb-3 sm:pb-[28.03px] px-[22px] md:px-[50px] h-full">
-							<img className="w-[27.24px] h-[27.24px] sm:w-auto sm:h-auto" src="/images/dollar.svg" alt="" />
+							<span className="mt-2 font-light text-[8.22px] sm:text-[13px] leading-[7.78px] sm:leading-[14px] tracking-[-0.02em] text-center whitespace-nowrap">Current Deposit</span>
 							<span className="mt-2 font-medium text-[20.26px] sm:text-[28.26px] leading-[25.32px] sm:leading-[35.32px] whitespace-nowrap">{total ? (total.toString() / Math.pow(10, 18)).toFixed(3) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.800' }} />}</span>
+							<span className="mt-6 font-light text-[8.22px] sm:text-[13px] leading-[7.78px] sm:leading-[14px] tracking-[-0.02em] text-center whitespace-nowrap text-green2">Max Deposit</span>
+							<span className="mt-2 font-medium text-[20.26px] sm:text-[28.26px] leading-[25.32px] sm:leading-[35.32px] whitespace-nowrap text-green2">{maxDepositPool ? (maxDepositPool.toString() / Math.pow(10, 18)).toFixed(3) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.800' }} />}</span>
+							<div className="mt-6 w-full">
+								<LinearProgress variant="determinate" className="progress" value={total / maxDepositPool * 100 > 100 ? 100 : total / maxDepositPool * 100} />
+							</div>
 							<span className="mt-2 font-light text-[8.22px] sm:text-[13px] leading-[7.78px] sm:leading-[14px] tracking-[-0.02em] text-center whitespace-nowrap">Round Reward Pool</span>
 						</div>
 					</div>
