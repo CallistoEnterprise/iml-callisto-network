@@ -33,6 +33,8 @@ module.exports = {
         "green2": "#51B56D",
         "green3": "#36DDAB",
         "red1": "#FE6B6B",
+        "panelyellow": "rgba(255, 255, 0, 0.1)",
+        "panelgreen": "rgba(81, 181, 109, 0.1)"
       },
       backgroundImage: {
         "inputInner": "linear-gradient(136.1deg, #26262D -10.3%, #151517 96.4%)",

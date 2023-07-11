@@ -2,6 +2,7 @@ import React, { useContext, useMemo, useState } from "react";
 import { useWeb3React } from '@web3-react/core'
 import { useCookies } from "react-cookie";
 import { Skeleton, Tooltip } from "@mui/material";
+import { Help } from "@mui/icons-material";
 import { ethers } from "ethers";
 import { ModalContext } from "../contexts/ModalContextProvider";
 import { toast } from "../utils/msTime";
@@ -27,7 +28,7 @@ const Dashboard = () => {
         if (!cookies.lotteries || cookies.lotteries.length === 0)
           setCookie("lotteries", JSON.stringify([addressIn]))
         else {
-          if(cookies.lotteries.some(x => x === addressIn)) {
+          if (cookies.lotteries.some(x => x === addressIn)) {
             toast("Lottery exists")
           }
           else {
@@ -52,45 +53,51 @@ const Dashboard = () => {
   }, [cookies, setAddresses])
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row items-start gap-y-[30px] lg:space-x-[30.26px] gap:space-y-0 mt-[30.89px] w-full overflow-auto lg:pl-[32.64px] lg:pr-[13.16px]">
-      <div className="flex flex-col space-y-[15.56px] w-full lg:w-auto px-6 lg:px-0">
-        <span className="mb-3 font-light text-[14px] sm:text-[18px] leading-[100%] tracking-[-0.02em] text-green1">
-          List of available lotteries ({addresses.length})
+    <>
+      <span className="mt-[30.89px] mb-3 font-light text-[14px] sm:text-[18px] leading-[100%] tracking-[-0.02em] text-green1 px-6 lg:pl-[32.64px] lg:pr-[13.16px]">
+        <span>
+          List of available lotteries: {addresses.length}
         </span>
-        {addresses.map((x, i) =>
-          <Card key={i} address={x} />
-        )}
-        <div className="flex items-center space-x-3">
-          <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
-            <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
-              <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Address" value={addressIn} onChange={e => setAddressIn(e.target.value)} />
+        <Tooltip title="List of lotteries">
+          <Help className="-mt-1 ml-3" fontSize="small" />
+        </Tooltip>
+      </span>
+      <div className="flex flex-col-reverse lg:flex-row items-start gap-y-[30px] lg:space-x-[30.26px] gap:space-y-0 w-full overflow-auto lg:pl-[32.64px] lg:pr-[13.16px]">
+        <div className="flex flex-col space-y-[15.56px] w-full lg:w-auto px-6 lg:px-0">
+          {addresses.map((x, i) =>
+            <Card key={i} address={x} />
+          )}
+          <div className="flex items-center space-x-3">
+            <div className="flex-1 px-[1px] py-[1px] bg-inputOuter rounded-sm overflow-hidden">
+              <div className="flex items-center space-x-[17.69px] px-[17.39px] py-2.5 bg-inputInner rounded-sm overflow-hidden">
+                <input className="w-full font-light text-[12.61px] leading-[15.76px] text-white placeholder-grey1" placeholder="Address" value={addressIn} onChange={e => setAddressIn(e.target.value)} />
+              </div>
             </div>
+            <button className="bg-green2 capitalize px-4 py-2 rounded-tiny sm:rounded-sm text-[12px]" onClick={load}>Load from address</button>
           </div>
-          <button className="bg-green2 capitalize px-4 py-2 rounded-tiny sm:rounded-sm text-[12px]" onClick={load}>Load from address</button>
         </div>
-      </div>
-      <div className="flex flex-col md:hidden w-full">
-        <div className="flex justify-center items-center space-x-[45px]">
-          <div className="flex flex-col items-center space-y-3 font-light text-[11px] leading-[13.75px] text-green1">
-            <div className="flex justify-center items-center rounded-full transition cursor-pointer">
-              <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="4.07593" cy="4.00952" r="2.83813" stroke="currentColor" />
-                <circle cx="4.07593" cy="14.1965" r="2.83813" stroke="currentColor" />
-                <rect x="10.6753" y="1.17139" width="7.86589" height="15.8633" rx="3.93295" stroke="currentColor" />
-              </svg>
+        <div className="flex flex-col md:hidden w-full">
+          <div className="flex justify-center items-center space-x-[45px]">
+            <div className="flex flex-col items-center space-y-3 font-light text-[11px] leading-[13.75px] text-green1">
+              <div className="flex justify-center items-center rounded-full transition cursor-pointer">
+                <svg width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="4.07593" cy="4.00952" r="2.83813" stroke="currentColor" />
+                  <circle cx="4.07593" cy="14.1965" r="2.83813" stroke="currentColor" />
+                  <rect x="10.6753" y="1.17139" width="7.86589" height="15.8633" rx="3.93295" stroke="currentColor" />
+                </svg>
+              </div>
+              <span>Main</span>
             </div>
-            <span>Main</span>
-          </div>
-          <div className="flex flex-col items-center space-y-3 font-light text-[11px] leading-[13.75px] text-grey1 hover:text-white">
-            <div className="flex justify-center items-center rounded-full transition cursor-pointer" onClick={() => setOpenConnectModal(true)}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M10.1753 19.8276C4.80582 19.8276 0.449463 15.4713 0.449463 10.1018C0.449463 4.73234 4.80582 0.375977 10.1753 0.375977C15.5448 0.375977 19.9011 4.73234 19.9011 10.1018C19.9011 15.4713 15.5448 19.8276 10.1753 19.8276ZM10.1753 1.59171C5.47447 1.59171 1.66519 5.40099 1.66519 10.1018C1.66519 14.8026 5.47447 18.6119 10.1753 18.6119C14.8761 18.6119 18.6854 14.8026 18.6854 10.1018C18.6854 5.40099 14.8761 1.59171 10.1753 1.59171Z" fill="currentColor" />
-                <path d="M9.14386 9.12291L6.58323 13.4336C6.49516 13.5819 6.66209 13.7502 6.81108 13.6634L11.1391 11.1402C11.1639 11.1258 11.1845 11.1052 11.199 11.0804L13.7412 6.75133C13.8286 6.60263 13.6608 6.43516 13.5122 6.52276L9.20265 9.06431C9.17843 9.07859 9.15821 9.09875 9.14386 9.12291Z" stroke="currentColor" strokeWidth="1.2" />
-              </svg>
+            <div className="flex flex-col items-center space-y-3 font-light text-[11px] leading-[13.75px] text-grey1 hover:text-white">
+              <div className="flex justify-center items-center rounded-full transition cursor-pointer" onClick={() => setOpenConnectModal(true)}>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10.1753 19.8276C4.80582 19.8276 0.449463 15.4713 0.449463 10.1018C0.449463 4.73234 4.80582 0.375977 10.1753 0.375977C15.5448 0.375977 19.9011 4.73234 19.9011 10.1018C19.9011 15.4713 15.5448 19.8276 10.1753 19.8276ZM10.1753 1.59171C5.47447 1.59171 1.66519 5.40099 1.66519 10.1018C1.66519 14.8026 5.47447 18.6119 10.1753 18.6119C14.8761 18.6119 18.6854 14.8026 18.6854 10.1018C18.6854 5.40099 14.8761 1.59171 10.1753 1.59171Z" fill="currentColor" />
+                  <path d="M9.14386 9.12291L6.58323 13.4336C6.49516 13.5819 6.66209 13.7502 6.81108 13.6634L11.1391 11.1402C11.1639 11.1258 11.1845 11.1052 11.199 11.0804L13.7412 6.75133C13.8286 6.60263 13.6608 6.43516 13.5122 6.52276L9.20265 9.06431C9.17843 9.07859 9.15821 9.09875 9.14386 9.12291Z" stroke="currentColor" strokeWidth="1.2" />
+                </svg>
+              </div>
+              <span>Wallet</span>
             </div>
-            <span>Wallet</span>
-          </div>
-          {/* <div className="flex flex-col items-center space-y-3 font-light text-[11px] leading-[13.75px] text-grey1 hover:text-white">
+            {/* <div className="flex flex-col items-center space-y-3 font-light text-[11px] leading-[13.75px] text-grey1 hover:text-white">
             <div className="flex justify-center items-center rounded-full transition cursor-pointer">
               <svg width="19" height="19" viewBox="0 0 19 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15.4499 4.90039C15.4499 4.90039 4.99865 4.90039 3.10445 4.90039C1.83863 4.90039 1.04688 6.13493 1.04688 6.95796V15.7578C1.04688 16.8071 1.89706 17.6573 2.94642 17.6573H15.6079C16.6568 17.6573 17.5074 16.8071 17.5074 15.7578V6.89459C17.5074 5.84646 16.4988 4.90039 15.4499 4.90039Z" stroke="currentColor" strokeWidth="1.4" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
@@ -111,30 +118,31 @@ const Dashboard = () => {
             </div>
             <span>History</span>
           </div> */}
+          </div>
+          <div className="mt-5 w-full h-[1px] bg-grey8" />
         </div>
-        <div className="mt-5 w-full h-[1px] bg-grey8" />
-      </div>
-      <div className="flex flex-col space-y-5 flex-1">
-        <div className="lg:px-[1px] lg:py-[1px] lg:bg-inputOuter rounded-sm px-6 lg:px-0">
-          <div className="flex flex-col items-start lg:bg-inputInner rounded-sm lg:pl-[23.05px] lg:pr-[23.31px] lg:py-[18.77px]">
-            <span className="font-medium text-[20px] leading-[25px]">Details</span>
-            <div className="flex flex-col space-y-[13px] mt-[10px] w-full px-[1px] py-[1px] overflow-hidden">
-              <div className="bg-inputOuter p-[1px] rounded-sm">
-                <Tooltip title="This shows balance of your wallet, a pool of funds that you can use to recharge and deposit.">
-                  <div className="flex flex-col items-start flex-1 px-[17px] py-[15px] rounded-sm bg-pp bg-cover backdrop-blur h-full">
-                    <span className="font-medium text-[11px] lg:text-[14px] leading-[13.75px] lg:leading-[17.5px]">Wallet Balance</span>
-                    <span className="flex items-center font-medium text-[22px] lg:text-[23.26px] leading-[27.5px] lg:leading-[29.08px] mt-[7.74px]">
-                      {account ? (balance / Math.pow(10, 18)).toFixed(2) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.700' }} />}
-                      <span className="ml-2">CLO</span>
-                    </span>
-                  </div>
-                </Tooltip>
+        <div className="flex flex-col space-y-5 flex-1">
+          <div className="lg:px-[1px] lg:py-[1px] lg:bg-inputOuter rounded-sm px-6 lg:px-0">
+            <div className="flex flex-col items-start lg:bg-inputInner rounded-sm lg:pl-[23.05px] lg:pr-[23.31px] lg:py-[18.77px]">
+              <span className="font-medium text-[20px] leading-[25px]">Details</span>
+              <div className="flex flex-col space-y-[13px] mt-[10px] w-full px-[1px] py-[1px] overflow-hidden">
+                <div className="bg-inputOuter p-[1px] rounded-sm">
+                  <Tooltip title="This shows balance of your wallet, a pool of funds that you can use to recharge and deposit.">
+                    <div className="flex flex-col items-start flex-1 px-[17px] py-[15px] rounded-sm bg-pp bg-cover backdrop-blur h-full">
+                      <span className="font-medium text-[11px] lg:text-[14px] leading-[13.75px] lg:leading-[17.5px]">Wallet Balance</span>
+                      <span className="flex items-center font-medium text-[22px] lg:text-[23.26px] leading-[27.5px] lg:leading-[29.08px] mt-[7.74px]">
+                        {account ? (balance / Math.pow(10, 18)).toFixed(2) : <Skeleton variant="text" width={50} sx={{ bgcolor: 'grey.700' }} />}
+                        <span className="ml-2">CLO</span>
+                      </span>
+                    </div>
+                  </Tooltip>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
