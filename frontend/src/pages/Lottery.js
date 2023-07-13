@@ -308,37 +308,40 @@ const Lottery = () => {
   }, [lotteryContract, key])
 
   useMemo(() => {
-    setInterval(async () => {
-      const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
-      const ethcallProvider = new Provider(provider);
-      const _total = await provider.getBalance(key)
-      setMulticallAddress(820, "0x914D4b9Bb542077BeA48DE5E3D6CF42e7ADfa1aa");
-      await ethcallProvider.init();
-      const _lotteryContract = new Contract(key, ROUTERS.LOTTERY_MULTICALL.abi);
-      const multiResult = await ethcallProvider.all([
-        _lotteryContract.current_round(),
-      ]);
-      const data = await lotteryContract.queryFilter(lotteryContract.filters.Deposit());
-      const roundStartData = await lotteryContract.queryFilter(lotteryContract.filters.NewRound(multiResult[1]));
-      const _depositData = data.filter(x => x.blockNumber >= roundStartData[0].blockNumber).map(x => {
-        const tmp = x.decode(x.data, x.topics)
-        return {
-          amount_credited: ethers.utils.formatEther(tmp["amount_credited"]),
-          amount_deposited: ethers.utils.formatEther(tmp["amount_deposited"]),
-          depositor: tmp["depositor"],
-        }
-      })
-      let sum = 0; _depositData.forEach(x => sum += parseFloat(x.amount_deposited));
-      const _depositDataWithPercent = _depositData.map(x => {
-        return { ...x, amount_deposited: parseFloat(x.amount_deposited), percent: x.amount_deposited / sum * 100 }
-      })
-      setTotal(_total)
-      const tmp = sumPercent(_depositDataWithPercent)
-      tmp.forEach(async (x) => {
-        if (await lotteryContract.is_winner(x.depositor)) setWinner(x.depositor)
-      })
-      setDepositData(tmp)
-    }, 5000)
+    const tete = () => {
+      setInterval(async () => {
+        const provider = new ethers.providers.JsonRpcProvider("https://rpc.callisto.network");
+        const ethcallProvider = new Provider(provider);
+        const _total = await provider.getBalance(key)
+        setMulticallAddress(820, "0x914D4b9Bb542077BeA48DE5E3D6CF42e7ADfa1aa");
+        await ethcallProvider.init();
+        const _lotteryContract = new Contract(key, ROUTERS.LOTTERY_MULTICALL.abi);
+        const multiResult = await ethcallProvider.all([
+          _lotteryContract.current_round(),
+        ]);
+        const data = await lotteryContract.queryFilter(lotteryContract.filters.Deposit());
+        const roundStartData = await lotteryContract.queryFilter(lotteryContract.filters.NewRound(multiResult[1]));
+        const _depositData = data.filter(x => x.blockNumber >= roundStartData[0].blockNumber).map(x => {
+          const tmp = x.decode(x.data, x.topics)
+          return {
+            amount_credited: ethers.utils.formatEther(tmp["amount_credited"]),
+            amount_deposited: ethers.utils.formatEther(tmp["amount_deposited"]),
+            depositor: tmp["depositor"],
+          }
+        })
+        let sum = 0; _depositData.forEach(x => sum += parseFloat(x.amount_deposited));
+        const _depositDataWithPercent = _depositData.map(x => {
+          return { ...x, amount_deposited: parseFloat(x.amount_deposited), percent: x.amount_deposited / sum * 100 }
+        })
+        setTotal(_total)
+        const tmp = sumPercent(_depositDataWithPercent)
+        tmp.forEach(async (x) => {
+          if (await lotteryContract.is_winner(x.depositor)) setWinner(x.depositor)
+        })
+        setDepositData(tmp)
+      }, 5000)
+    }
+    tete()
   }, [])
 
   return (
