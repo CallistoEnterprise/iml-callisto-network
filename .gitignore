@@ -1,11 +1,13 @@
-node_modules
+contract/node_modules
 
 #Hardhat files
-cache
-artifacts
+contract/cache
+contract/artifacts
 
 #Other
-.DS_Store
-.env
-package-lock.json
+contract/.DS_Store
+contract/.env
+contract/package-lock.json
 .tmp.*
+
+frontend/node_modules

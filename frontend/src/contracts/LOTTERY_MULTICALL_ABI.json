@@ -1,0 +1,615 @@
+[
+	{
+		"type": "event",
+		"name": "Deposit",
+		"inputs": [
+			{
+				"type": "address",
+				"name": "depositor",
+				"internalType": "address",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "amount_deposited",
+				"internalType": "uint256",
+				"indexed": false
+			},
+			{
+				"type": "uint256",
+				"name": "amount_credited",
+				"internalType": "uint256",
+				"indexed": false
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "NewRound",
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "round_id",
+				"internalType": "uint256",
+				"indexed": true
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "Refund",
+		"inputs": [
+			{
+				"type": "address",
+				"name": "receiver",
+				"internalType": "address",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "round_id",
+				"internalType": "uint256",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "amount",
+				"internalType": "uint256",
+				"indexed": false
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "event",
+		"name": "RoundFinished",
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "round_id",
+				"internalType": "uint256",
+				"indexed": true
+			},
+			{
+				"type": "address",
+				"name": "winner",
+				"internalType": "address",
+				"indexed": true
+			},
+			{
+				"type": "uint256",
+				"name": "reward",
+				"internalType": "uint256",
+				"indexed": false
+			},
+			{
+				"type": "uint256",
+				"name": "rng",
+				"internalType": "uint256",
+				"indexed": false
+			}
+		],
+		"anonymous": false
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "RNG",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "nonpayable",
+		"outputs": [
+			{
+				"type": "bool",
+				"name": "",
+				"internalType": "bool"
+			}
+		],
+		"name": "check_entropy_criteria",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "nonpayable",
+		"outputs": [],
+		"name": "configure",
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_min_bet",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint8",
+				"name": "_max_deposits",
+				"internalType": "uint8"
+			},
+			{
+				"type": "uint256",
+				"name": "_max_deposit_threshold",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "_deposit_phase_duration",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "_reveal_phase_duration",
+				"internalType": "uint256"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "nonpayable",
+		"outputs": [],
+		"name": "configureFees",
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_entropy_fee",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "_token_reward_fee",
+				"internalType": "uint256"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "current_interval_end",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "current_round",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "bool",
+				"name": "",
+				"internalType": "bool"
+			}
+		],
+		"name": "debug_mode",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "payable",
+		"outputs": [],
+		"name": "deposit",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "deposits_phase_duration",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "nonpayable",
+		"outputs": [],
+		"name": "disableDebug",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "address",
+				"name": "",
+				"internalType": "address payable"
+			}
+		],
+		"name": "entropy_contract",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "entropy_fee",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "entropy_phase_duration",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "nonpayable",
+		"outputs": [],
+		"name": "finish_round",
+		"inputs": [
+			{
+				"type": "address",
+				"name": "_winner",
+				"internalType": "address payable"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "nonpayable",
+		"outputs": [],
+		"name": "forceWithdraw",
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_amount",
+				"internalType": "uint256"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "get_max_deposit_threshold",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint8",
+				"name": "",
+				"internalType": "uint8"
+			}
+		],
+		"name": "get_phase",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "get_round",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "_start",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint256",
+				"name": "_end",
+				"internalType": "uint256"
+			}
+		],
+		"name": "get_win_conditions",
+		"inputs": [
+			{
+				"type": "address",
+				"name": "_player",
+				"internalType": "address"
+			},
+			{
+				"type": "uint256",
+				"name": "_round",
+				"internalType": "uint256"
+			},
+			{
+				"type": "uint8",
+				"name": "_depoindex",
+				"internalType": "uint8"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "bool",
+				"name": "",
+				"internalType": "bool"
+			}
+		],
+		"name": "is_winner",
+		"inputs": [
+			{
+				"type": "address",
+				"name": "_user",
+				"internalType": "address"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint8",
+				"name": "",
+				"internalType": "uint8"
+			}
+		],
+		"name": "max_allowed_deposits",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "max_deposit_pool_threshold",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "min_allowed_bet",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "address",
+				"name": "",
+				"internalType": "address"
+			}
+		],
+		"name": "owner",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "last_round",
+				"internalType": "uint256"
+			}
+		],
+		"name": "players",
+		"inputs": [
+			{
+				"type": "address",
+				"name": "",
+				"internalType": "address"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "nonpayable",
+		"outputs": [],
+		"name": "refund",
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "_round",
+				"internalType": "uint256"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "nonpayable",
+		"outputs": [],
+		"name": "rescueERC20",
+		"inputs": [
+			{
+				"type": "address",
+				"name": "token",
+				"internalType": "address"
+			},
+			{
+				"type": "address",
+				"name": "to",
+				"internalType": "address"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "address",
+				"name": "",
+				"internalType": "address payable"
+			}
+		],
+		"name": "reward_pool_contract",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "bool",
+				"name": "",
+				"internalType": "bool"
+			}
+		],
+		"name": "round_failed",
+		"inputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "round_reward",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "bool",
+				"name": "",
+				"internalType": "bool"
+			}
+		],
+		"name": "round_reward_paid",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "round_start_timestamp",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "nonpayable",
+		"outputs": [],
+		"name": "set_entropy_contract",
+		"inputs": [
+			{
+				"type": "address",
+				"name": "_new_contract",
+				"internalType": "address payable"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "nonpayable",
+		"outputs": [],
+		"name": "set_reward_contract",
+		"inputs": [
+			{
+				"type": "address",
+				"name": "_new_contract",
+				"internalType": "address payable"
+			}
+		]
+	},
+	{
+		"type": "function",
+		"stateMutability": "payable",
+		"outputs": [],
+		"name": "start_new_round",
+		"inputs": []
+	},
+	{
+		"type": "function",
+		"stateMutability": "view",
+		"outputs": [
+			{
+				"type": "uint256",
+				"name": "",
+				"internalType": "uint256"
+			}
+		],
+		"name": "token_reward_fee",
+		"inputs": []
+	}
+]
